@@ -1,16 +1,21 @@
 # Multi-level Side Menu
 
-Ionic 2 demo of a two-level side menu. The component currently supports only two levels of items. 
+Ionic 2 demo of a two-level side menu. The component currently supports only two levels of items. If more levels are needed, maybe using tabs layout for the other levels would be a better approach. 
 
-If more levels are needed, maybe using tabs layout for the other levels would be a better approach.
+The component also supports two different modes: default and accordion.
+
+<p>
+  <img src="http://i.giphy.com/d1E17atMulAI9UEU.gif" width="350"/>
+  <img src="http://i.giphy.com/l0ExnRMoD2v40Agvu.gif" width="350"/>
+</p>
 
 ## Running the demo
 
 Inside of the project folder, run `npm install` and then to run the demo in the browser `ionic serve [-t android/ios]`
 
-### Using the component in your projects
+## Using the component in your projects
 
-Just copy the `side-menu` folder (inculding the html, ts and scss files) in your project. Then include it in the `declarations` array from your `@NgModule`.
+Just copy the `side-menu` folder (inculding the html, ts and scss files) in your project. Then include the `SideMenuContentComponent` in the `declarations` array from your `@NgModule`.
 
 Menu and sub menu items should have the following format:
 
@@ -56,10 +61,34 @@ let menuOption: MenuOptionModel = {
 
 When an option is selected, the `MenuOptionModel` object is returned to the caller, so it can check which option was selected and if the user should be redirected to a given page, or the login / logout logic should be executed.
 
-The component support two modes: default and accordion. To enable the accordion mode just add `[accordionMode]="true"` to the `side-menu-content` element.
+To enable the accordion mode just add `[accordionMode]="true"` to the `side-menu-content` element.
 
 ```
 <side-menu-content [accordionMode]="true" [options]="options" (selectOption)="selectOption($event)"></side-menu-content>
 ```
 
-The component also exposes the `collapseAllOptions()` method to reset the state of the options when needed (when closing the menu for instance).
+The component also exposes the `collapseAllOptions()` method to reset the state of the options when needed (when closing the menu for instance):
+
+```
+@Component({
+	templateUrl: 'app.html'
+})
+export class MyApp {
+	// Get the instance to call the public methods
+	@ViewChild(SideMenuContentComponent) sideMenu: SideMenuContentComponent;
+
+    // ...
+
+    // Redirect the user to the selected page
+	public selectOption(option: MenuOptionModel): void {
+		this.menuCtrl.close().then(() => {
+
+			// Collapse all the options
+			this.sideMenu.collapseAllOptions();
+
+			// ...
+		});
+	}
+
+}
+```
