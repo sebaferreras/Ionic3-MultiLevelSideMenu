@@ -17,6 +17,8 @@ Inside of the project folder, run `npm install` and then to run the demo in the 
 
 Just copy the `side-menu` folder (inculding the html, ts and scss files) in your project. Then include the `SideMenuContentComponent` in the `declarations` array from your `@NgModule`.
 
+## Items structure
+
 Menu and sub menu items should have the following format:
 
 ```
@@ -59,13 +61,19 @@ let menuOption: MenuOptionModel = {
 };
 ```
 
+## Selecting options
+
 When an option is selected, the `MenuOptionModel` object is returned to the caller, so it can check which option was selected and if the user should be redirected to a given page, or the login / logout logic should be executed.
+
+## Accordion mode
 
 To enable the accordion mode just add `[accordionMode]="true"` to the `side-menu-content` element.
 
 ```
 <side-menu-content [accordionMode]="true" [options]="options" (selectOption)="selectOption($event)"></side-menu-content>
 ```
+
+## Some other public methods
 
 The component also exposes the `collapseAllOptions()` method to reset the state of the options when needed (when closing the menu for instance):
 
