@@ -1,0 +1,17 @@
+<ion-menu persistent="true" [content]="content">
+	<ion-header>
+		<ion-toolbar color="secondary">
+			<ion-title>Menu</ion-title>
+		</ion-toolbar>
+	</ion-header>
+
+	<ion-content>
+
+		<!-- Side Menu -->
+		<side-menu-content [accordionMode]="true" [options]="options" (selectOption)="selectOption($event)"></side-menu-content>
+
+	</ion-content>
+</ion-menu>
+
+<!-- Disable swipe-to-go-back because it's poor UX to combine STGB with side menus -->
+<ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>
