@@ -28,7 +28,7 @@ export class SideMenuContentComponent {
 	@Input() iosItemHeight: number = 45;
 	@Input() mdItemHeight: number = 50;
 	@Input() wpItemHeight: number = 50;
-	
+
 	// Outputs
 	@Output() selectOption = new EventEmitter<any>();
 
@@ -76,6 +76,127 @@ export class SideMenuContentComponent {
 		for (let i = 0; i < icons.length; i++) {
 			this.resetIcon(icons[i]);
 		}
+	}
+
+	// Create fake options to populate the side menu
+	public getSampleMenuOptions(targetComponent?: any): Array<MenuOptionModel> {
+		let options = new Array<MenuOptionModel>();
+
+		// Load simple menu options
+		// ------------------------------------------
+		options.push({
+			iconName: 'ios-home',
+			displayName: `Option 1`,
+			isLogin: false,
+			isLogout: false,
+			component: targetComponent || null
+		});
+
+		options.push({
+			iconName: 'ios-analytics',
+			displayName: `Option 2`,
+			isLogin: false,
+			isLogout: false,
+			component: targetComponent || null
+		});
+
+		options.push({
+			iconName: 'ios-apps',
+			displayName: `Option 3`,
+			isLogin: false,
+			isLogout: false,
+			component: targetComponent || null
+		});
+
+		// Load options with nested items
+		// ------------------------------------------
+		options.push({
+			iconName: 'ios-arrow-down',
+			displayName: `Option 4`,
+			component: targetComponent || null,
+			isLogin: false,
+			isLogout: false,
+			subItems: [
+				{
+					iconName: 'ios-basket',
+					displayName: `Sub Option 1`,
+					component: targetComponent || null,
+					isLogin: false,
+					isLogout: false
+				},
+				{
+					iconName: 'ios-bookmark',
+					displayName: `Sub Option 2`,
+					component: targetComponent || null,
+					isLogin: false,
+					isLogout: false
+				}
+			]
+		});
+
+		options.push({
+			iconName: 'ios-arrow-down',
+			displayName: `Option 5`,
+			component: targetComponent || null,
+			isLogin: false,
+			isLogout: false,
+			subItems: [
+				{
+					iconName: 'ios-cafe',
+					displayName: `Sub Option 4`,
+					component: targetComponent || null,
+					isLogin: false,
+					isLogout: false
+				},
+				{
+					iconName: 'ios-camera',
+					displayName: `Sub Option 5`,
+					component: targetComponent || null,
+					isLogin: false,
+					isLogout: false
+				},
+				{
+					iconName: 'ios-cart',
+					displayName: `Sub Option 6`,
+					component: targetComponent || null,
+					isLogin: false,
+					isLogout: false
+				},
+				{
+					iconName: 'ios-chatboxes',
+					displayName: `Sub Option 7`,
+					component: targetComponent || null,
+					isLogin: false,
+					isLogout: false
+				}
+			]
+		});
+
+		options.push({
+			iconName: 'ios-arrow-down',
+			displayName: `Option 6`,
+			component: targetComponent || null,
+			isLogin: false,
+			isLogout: false,
+			subItems: [
+				{
+					iconName: 'ios-clock',
+					displayName: `Sub Option 8`,
+					component: targetComponent || null,
+					isLogin: false,
+					isLogout: false
+				},
+				{
+					iconName: 'ios-flask',
+					displayName: `Sub Option 9`,
+					component: targetComponent || null,
+					isLogin: false,
+					isLogout: false
+				}
+			]
+		});
+
+		return options;
 	}
 
 	// ---------------------------------------------------

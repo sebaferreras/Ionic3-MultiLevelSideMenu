@@ -39,128 +39,8 @@ export class MyApp {
 			Splashscreen.hide();
 
 			// TODO: replace by real options
-			this.loadFakeOptions();
+			this.options = this.sideMenu.getSampleMenuOptions(DetailsPage);
 		});
-	}
-
-	// Create fake options to populate the side menu
-	private loadFakeOptions(): void {
-		this.options = new Array<MenuOptionModel>();
-
-		// Load simple menu options
-		// ------------------------------------------
-		this.options.push({
-			iconName: 'ios-home',
-			displayName: `Option 1`,
-			isLogin: false,
-			isLogout: false,
-			component: DetailsPage
-		});
-
-		this.options.push({
-			iconName: 'ios-analytics',
-			displayName: `Option 2`,
-			isLogin: false,
-			isLogout: false,
-			component: DetailsPage
-		});
-
-		this.options.push({
-			iconName: 'ios-apps',
-			displayName: `Option 3`,
-			isLogin: false,
-			isLogout: false,
-			component: DetailsPage
-		});
-
-		// Load options with nested items
-		// ------------------------------------------
-		this.options.push({
-			iconName: 'ios-arrow-down',
-			displayName: `Option 4`,
-			component: DetailsPage,
-			isLogin: false,
-			isLogout: false,
-			subItems: [
-				{
-					iconName: 'ios-basket',
-					displayName: `Sub Option 1`,
-					component: DetailsPage,
-					isLogin: false,
-					isLogout: false
-				},
-				{
-					iconName: 'ios-bookmark',
-					displayName: `Sub Option 2`,
-					component: DetailsPage,
-					isLogin: false,
-					isLogout: false
-				}
-			]
-		});
-
-		this.options.push({
-			iconName: 'ios-arrow-down',
-			displayName: `Option 5`,
-			component: DetailsPage,
-			isLogin: false,
-			isLogout: false,
-			subItems: [
-				{
-					iconName: 'ios-cafe',
-					displayName: `Sub Option 4`,
-					component: DetailsPage,
-					isLogin: false,
-					isLogout: false
-				},
-				{
-					iconName: 'ios-camera',
-					displayName: `Sub Option 5`,
-					component: DetailsPage,
-					isLogin: false,
-					isLogout: false
-				},
-				{
-					iconName: 'ios-cart',
-					displayName: `Sub Option 6`,
-					component: DetailsPage,
-					isLogin: false,
-					isLogout: false
-				},
-				{
-					iconName: 'ios-chatboxes',
-					displayName: `Sub Option 7`,
-					component: DetailsPage,
-					isLogin: false,
-					isLogout: false
-				}
-			]
-		});
-
-		this.options.push({
-			iconName: 'ios-arrow-down',
-			displayName: `Option 6`,
-			component: DetailsPage,
-			isLogin: false,
-			isLogout: false,
-			subItems: [
-				{
-					iconName: 'ios-clock',
-					displayName: `Sub Option 8`,
-					component: DetailsPage,
-					isLogin: false,
-					isLogout: false
-				},
-				{
-					iconName: 'ios-flask',
-					displayName: `Sub Option 9`,
-					component: DetailsPage,
-					isLogin: false,
-					isLogout: false
-				}
-			]
-		});
-
 	}
 
 	// Redirect the user to the selected page
@@ -171,7 +51,7 @@ export class MyApp {
 			this.sideMenu.collapseAllOptions();
 
 			// Redirect to the selected page
-			this.navCtrl.push(DetailsPage, { 'title': option.displayName });
+			this.navCtrl.push(option.component || DetailsPage, { 'title': option.displayName });
 		});
 	}
 }
