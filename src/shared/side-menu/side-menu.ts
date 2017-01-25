@@ -62,7 +62,7 @@ export class SideMenuContentComponent {
 			itemHeight = this.mdItemHeight;
 		}
 
-		this.toggleOptionSubItems(optionsDivElement, itemHeight, itemsCount);
+		this.toggleOptionSubItems(optionsDivElement, itemHeight + 1, itemsCount);
 		this.toggleOptionIcon(arrowIcon);
 	}
 
