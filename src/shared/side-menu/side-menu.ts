@@ -25,7 +25,7 @@ export class SideMenuContentComponent {
 	@Input() accordionMode: boolean = false;
 
 	// Inputs for custom item sizes
-	@Input() iosItemHeight: number = 45;
+	@Input() iosItemHeight: number = 50;
 	@Input() mdItemHeight: number = 50;
 	@Input() wpItemHeight: number = 50;
 
@@ -112,7 +112,7 @@ export class SideMenuContentComponent {
 		// ------------------------------------------
 		options.push({
 			iconName: 'ios-arrow-down',
-			displayName: `Option 4`,
+			displayName: `Sub options with icons`,
 			component: targetComponent || null,
 			isLogin: false,
 			isLogout: false,
@@ -136,59 +136,35 @@ export class SideMenuContentComponent {
 
 		options.push({
 			iconName: 'ios-arrow-down',
-			displayName: `Option 5`,
+			displayName: `Sub options without icons`,
 			component: targetComponent || null,
 			isLogin: false,
 			isLogout: false,
 			subItems: [
 				{
-					iconName: 'ios-cafe',
+					iconName: null,
 					displayName: `Sub Option 4`,
 					component: targetComponent || null,
 					isLogin: false,
 					isLogout: false
 				},
 				{
-					iconName: 'ios-camera',
+					iconName: null,
 					displayName: `Sub Option 5`,
 					component: targetComponent || null,
 					isLogin: false,
 					isLogout: false
 				},
 				{
-					iconName: 'ios-cart',
+					iconName: null,
 					displayName: `Sub Option 6`,
 					component: targetComponent || null,
 					isLogin: false,
 					isLogout: false
 				},
 				{
-					iconName: 'ios-chatboxes',
+					iconName: null,
 					displayName: `Sub Option 7`,
-					component: targetComponent || null,
-					isLogin: false,
-					isLogout: false
-				}
-			]
-		});
-
-		options.push({
-			iconName: 'ios-arrow-down',
-			displayName: `Option 6`,
-			component: targetComponent || null,
-			isLogin: false,
-			isLogout: false,
-			subItems: [
-				{
-					iconName: 'ios-clock',
-					displayName: `Sub Option 8`,
-					component: targetComponent || null,
-					isLogin: false,
-					isLogout: false
-				},
-				{
-					iconName: 'ios-flask',
-					displayName: `Sub Option 9`,
 					component: targetComponent || null,
 					isLogin: false,
 					isLogout: false

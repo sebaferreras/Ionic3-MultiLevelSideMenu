@@ -4,7 +4,7 @@
         <!-- It is a simple option -->
         <template [ngIf]="!option.subItems">
             <ion-item (click)="select(option)">
-                <ion-icon [name]="option.iconName" item-left></ion-icon>
+                <ion-icon *ngIf="option.iconName" [name]="option.iconName" item-left></ion-icon>
                 {{ option.displayName }}
             </ion-item>
         </template>
@@ -20,7 +20,7 @@
                 <div [id]="'sub-item-' + i" class="options">
                     <template ngFor let-item [ngForOf]="option.subItems">
                         <ion-item (click)="select(item)">
-                            <ion-icon [name]="item.iconName" item-left></ion-icon>
+                            <ion-icon *ngIf="item.iconName" [name]="item.iconName" item-left></ion-icon>
                             {{ item.displayName }}
                         </ion-item>
                     </template>
