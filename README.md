@@ -5,8 +5,8 @@ Ionic 2 demo of a two-level side menu. The component currently supports only two
 The component also supports two different modes: default and accordion.
 
 <p>
-  <img src="http://i.giphy.com/d1E17atMulAI9UEU.gif" width="350"/>
-  <img src="http://i.giphy.com/l0ExnRMoD2v40Agvu.gif" width="350"/>
+  <img src="resources/gifs/accordion.gif" alt="Accordion" width="350">
+  <img src="resources/gifs/default.gif" alt="Default" width="350">
 </p>
 
 ## Ionic View
