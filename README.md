@@ -73,6 +73,21 @@ When an option is selected, the `MenuOptionModel` object is returned to the call
 <side-menu-content [options]="options" (selectOption)="selectOption($event)"></side-menu-content>
 ```
 
+And then in the App component code:
+
+```
+@Component({
+	templateUrl: 'app.html'
+})
+export class MyApp {
+    // ...
+
+    public selectOption(option: MenuOptionModel): void {
+        // ...
+    }
+}
+```
+
 ## Accordion mode
 
 To enable the accordion mode just add `[accordionMode]="true"` to the `side-menu-content` element.
@@ -90,17 +105,17 @@ The component also exposes the `collapseAllOptions()` method to reset the state 
 	templateUrl: 'app.html'
 })
 export class MyApp {
-	// Get the instance to call the public methods
-	@ViewChild(SideMenuContentComponent) sideMenu: SideMenuContentComponent;
+  // Get the instance to call the public methods
+  @ViewChild(SideMenuContentComponent) sideMenu: SideMenuContentComponent;
 
-    // ...
+  // ...
 
-    // Redirect the user to the selected page
-	public selectOption(option: MenuOptionModel): void {
-		this.menuCtrl.close().then(() => {
+  // Redirect the user to the selected page
+  public selectOption(option: MenuOptionModel): void {
+	  this.menuCtrl.close().then(() => {
 
-			// Collapse all the options
-			this.sideMenu.collapseAllOptions();
+		  // Collapse all the options
+		  this.sideMenu.collapseAllOptions();
 
 			// ...
 		});
