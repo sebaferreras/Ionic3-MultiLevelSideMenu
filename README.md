@@ -81,6 +81,20 @@ To enable the accordion mode just add `[accordionMode]="true"` to the `side-menu
 <side-menu-content [accordionMode]="true" [options]="options" (selectOption)="selectOption($event)"></side-menu-content>
 ```
 
+## Custom item height
+
+The default height for the items is **50px**. The height of the items is used to animate the side menu changes when hidding and showing the sub menu items.
+
+You can set a custom height for the items for each mode (the default **50px** value will be used for the others).
+
+```
+<side-menu-content [mdItemHeight]="60" ..."></side-menu-content>
+```
+```
+<side-menu-content [iosItemHeight]="55" [mdItemHeight]="60" [wpItemHeight]="65"..."></side-menu-content>
+```
+
+
 ## Some other public methods
 
 The component also exposes the `collapseAllOptions()` method to reset the state of the options when needed (when closing the menu for instance):
