@@ -11,7 +11,7 @@ The component also supports two different modes: default and accordion.
 
 ## Ionic View
 
-If you want to take a look at this demo using Ionic View, use this code: **d90d8463**, 
+If you want to take a look at this demo using Ionic View, use this code: **d90d8463**
 
 ## Running the demo
 
