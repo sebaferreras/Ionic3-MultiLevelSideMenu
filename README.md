@@ -129,7 +129,7 @@ export class MyApp {
         this.menuCtrl.close().then(() => {
 
             // Collapse all the options
-            this.sideMenu.collapseAllOptions();
+		    this.sideMenu.collapseAllOptions();
 
             // ...
 		});
