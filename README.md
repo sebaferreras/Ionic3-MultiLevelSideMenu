@@ -9,6 +9,10 @@ The component also supports two different modes: default and accordion.
   <img src="http://i.giphy.com/l0ExnRMoD2v40Agvu.gif" width="350"/>
 </p>
 
+## Ionic View
+
+If you want to take a look at this demo using Ionic View, use this code: **d90d8463**, 
+
 ## Running the demo
 
 Inside of the project folder, run `npm install` and then to run the demo in the browser `ionic serve [-t android/ios]`
@@ -63,7 +67,11 @@ let menuOption: MenuOptionModel = {
 
 ## Selecting options
 
-When an option is selected, the `MenuOptionModel` object is returned to the caller, so it can check which option was selected and if the user should be redirected to a given page, or the login / logout logic should be executed.
+When an option is selected, the `MenuOptionModel` object is returned to the caller by the `selectOption` event. The `MenuOptionModel` object returned can then be used to check not only if the user should be redirected to a given page but also if the login / logout logic should be executed, and so on...
+
+```
+<side-menu-content [options]="options" (selectOption)="selectOption($event)"></side-menu-content>
+```
 
 ## Accordion mode
 

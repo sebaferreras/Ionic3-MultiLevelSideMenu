@@ -2,7 +2,7 @@
 import { Component, ViewChild } from '@angular/core';
 
 // Ionic references
-import { Nav, Platform, MenuController} from 'ionic-angular';
+import { Nav, Platform, MenuController } from 'ionic-angular';
 
 // Ionic Native references
 import { StatusBar, Splashscreen } from 'ionic-native';
@@ -27,7 +27,7 @@ export class MyApp {
 	public options: Array<MenuOptionModel>;
 
 	constructor(private platform: Platform,
-				private menuCtrl: MenuController) {
+		private menuCtrl: MenuController) {
 		this.initializeApp();
 	}
 
@@ -53,5 +53,10 @@ export class MyApp {
 			// Redirect to the selected page
 			this.navCtrl.push(option.component || DetailsPage, { 'title': option.displayName });
 		});
+	}
+
+	public collapseMenuOptions(): void {
+		// Collapse all the options
+		this.sideMenu.collapseAllOptions();
 	}
 }
