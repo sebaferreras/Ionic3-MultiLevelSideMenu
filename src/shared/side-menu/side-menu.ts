@@ -1,7 +1,7 @@
 // Angular references
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, Renderer, ViewChildren, QueryList } from '@angular/core';
 
-import { Platform } from 'ionic-angular';
+import { Platform, DomController } from 'ionic-angular';
 
 // Base Interface
 export interface MenuOptionModel {
@@ -20,6 +20,9 @@ export interface MenuOptionModel {
 })
 export class SideMenuContentComponent {
 
+	@ViewChildren('options') optionDivs: QueryList<any>;
+	@ViewChildren('headerIcon') headerIcons;
+
 	// Main inputs
 	@Input() options: Array<MenuOptionModel>;
 	@Input() accordionMode: boolean = false;
@@ -32,7 +35,9 @@ export class SideMenuContentComponent {
 	// Outputs
 	@Output() selectOption = new EventEmitter<any>();
 
-	constructor(private platform: Platform) { }
+	constructor(private platform: Platform,
+				private renderer: Renderer,
+        		private domCtrl: DomController) { }
 
 	// ---------------------------------------------------
 	// PUBLIC methods
@@ -44,10 +49,8 @@ export class SideMenuContentComponent {
 	}
 
 	// Toggle the sub options of the selected item
-	public toggleItemOptions(e: any, itemsCount: number): void {
-		let itemHeight,
-			optionsDivElement = e.currentTarget.parentElement.getElementsByClassName('options')[0],
-			arrowIcon = e.currentTarget.parentElement.getElementsByClassName('header-icon')[0];
+	public toggleItemOptions(optionsDivElement: any, arrowIcon: any, itemsCount: number): void {
+		let itemHeight;
 
 		if (this.accordionMode) {
 			this.collapseAllOptionsExceptSelected(optionsDivElement);
@@ -68,14 +71,12 @@ export class SideMenuContentComponent {
 
 	// Reset the entire menu
 	public collapseAllOptions(): void {
-		let options = document.getElementsByClassName('options'),
-			icons = document.getElementsByClassName('header-icon');
-		for (let i = 0; i < options.length; i++) {
-			this.hideSubItems(options[i]);
-		}
-		for (let i = 0; i < icons.length; i++) {
-			this.resetIcon(icons[i]);
-		}
+		this.optionDivs.forEach(optionDiv => {
+			this.hideSubItems(optionDiv.nativeElement);
+		});
+		this.headerIcons.forEach(headerIcon => {
+			this.resetIcon(headerIcon.nativeElement);
+		});
 	}
 
 	// Create fake options to populate the side menu
@@ -181,32 +182,40 @@ export class SideMenuContentComponent {
 
 	// Toggle the sub items of the selected option
 	private toggleOptionSubItems(optionsContainer: any, elementHeight: number, itemsCount: number): void {
-		optionsContainer.style.height = this.subItemsAreExpanded(optionsContainer) ? '0px' : `${(elementHeight * itemsCount)}px`;
+		this.domCtrl.write(() => {
+            this.subItemsAreExpanded(optionsContainer)
+                ? this.renderer.setElementStyle(optionsContainer, 'height', '0px')
+                : this.renderer.setElementStyle(optionsContainer, 'height', `${(elementHeight * itemsCount)}px`);
+        });
 	}
 
 	// Toggle the arrow icon of the selected option
 	private toggleOptionIcon(arrowIcon: any): void {
-		this.iconIsRotated(arrowIcon) ? arrowIcon.classList.remove('rotate') : arrowIcon.classList.add('rotate');
+		this.domCtrl.write(() => {
+            this.iconIsRotated(arrowIcon)
+                ? this.renderer.setElementClass(arrowIcon, 'rotate', false)
+                : this.renderer.setElementClass(arrowIcon, 'rotate', true);
+        });
 	}
 
 	// Reset the arrow icon of all the options except the selected option
 	private resetAllIconsExceptSelected(selectedArrowIcon: any): void {
-		let icons = document.getElementsByClassName('header-icon');
-		for (let i = 0; i < icons.length; i++) {
-			if (icons[i].id !== selectedArrowIcon.id && this.iconIsRotated(icons[i])) {
-				this.resetIcon(icons[i]);
-			}
-		}
+		this.headerIcons.forEach(headerIcon => {
+			let iconElement = headerIcon.nativeElement;
+			if (iconElement.id !== selectedArrowIcon.id && this.iconIsRotated(iconElement)) {
+                this.resetIcon(iconElement);
+            }
+		});
 	}
 
 	// Collapse the sub items of all the options except the selected option
 	private collapseAllOptionsExceptSelected(selectedOptionsContainer: any): void {
-		let options = document.getElementsByClassName('options');
-		for (let i = 0; i < options.length; i++) {
-			if (options[i].id !== selectedOptionsContainer.id && this.subItemsAreExpanded(options[i])) {
-				this.hideSubItems(options[i]);
+		this.optionDivs.forEach(optionDiv => {
+			let optionElement = optionDiv.nativeElement;
+			if (optionElement.id !== selectedOptionsContainer.id && this.subItemsAreExpanded(optionElement)) {
+				this.hideSubItems(optionElement);
 			}
-		}
+		});
 	}
 
 	// Return true if sub items are expanded
@@ -216,16 +225,20 @@ export class SideMenuContentComponent {
 
 	// Return true if the icon is rotated
 	private iconIsRotated(element: any): boolean {
-		return element.classList.contains('rotate')
+		return element.classList.contains('rotate');
 	}
 
 	// Collapse the sub items of the selected option
 	private hideSubItems(optionsContainer: any): void {
-		optionsContainer.style.height = '0px';
+		this.domCtrl.write(() => {
+            this.renderer.setElementStyle(optionsContainer, 'height', '0px');
+        });
 	}
 
 	// Reset the arrow icon of the selected option
 	private resetIcon(arrowIcon: any): void {
-		arrowIcon.classList.remove('rotate')
+		this.domCtrl.write(() => {
+            this.renderer.setElementClass(arrowIcon, 'rotate', false);
+        });
 	}
 }

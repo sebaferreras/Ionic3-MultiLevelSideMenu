@@ -13,11 +13,11 @@
         <template [ngIf]="option.subItems && option.subItems.length > 0">
 
             <ion-list no-margin class="accordion-menu">
-                <ion-item class="header" tappable (click)="toggleItemOptions($event, option.subItems.length)">
-                    <ion-icon [id]="'header-icon-' + i" class="header-icon" [name]="option.iconName" item-left></ion-icon>
+                <ion-item class="header" tappable (click)="toggleItemOptions(options, headerIcon, option.subItems.length)">
+                    <ion-icon #headerIcon [id]="'header-icon-' + i" class="header-icon" [name]="option.iconName" item-left></ion-icon>
                     {{ option.displayName }}
                 </ion-item>
-                <div [id]="'sub-item-' + i" class="options">
+                <div #options [id]="'sub-item-' + i" class="options">
                     <template ngFor let-item [ngForOf]="option.subItems">
                         <ion-item (click)="select(item)">
                             <ion-icon *ngIf="item.iconName" [name]="item.iconName" item-left></ion-icon>
