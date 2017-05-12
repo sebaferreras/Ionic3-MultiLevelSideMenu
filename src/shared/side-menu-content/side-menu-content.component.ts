@@ -16,7 +16,7 @@ export interface MenuOptionModel {
 @Component({
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	selector: 'side-menu-content',
-	templateUrl: 'side-menu.html'
+	templateUrl: 'side-menu-content.component.html'
 })
 export class SideMenuContentComponent {
 

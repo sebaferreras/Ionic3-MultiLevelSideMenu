@@ -9,6 +9,23 @@ The component also supports two different modes: default and accordion.
   <img src="resources/gifs/default.gif" alt="Default" width="350">
 </p>
 
+## Ionic info
+
+```
+Your system information:
+
+Cordova CLI: 6.4.0
+Ionic Framework Version: 3.2.1
+Ionic CLI Version: 2.2.1
+Ionic App Lib Version: 2.2.0
+Ionic App Scripts Version: 1.3.7
+ios-deploy version: 1.9.0
+ios-sim version: 5.0.8
+OS: macOS Sierra
+Node Version: v6.9.2
+Xcode version: Xcode 8.3.2 Build version 8E2002
+```
+
 ## Ionic View
 
 If you want to take a look at this demo using Ionic View, use this code: **d90d8463**
@@ -19,7 +36,7 @@ Inside of the project folder, run `npm install` and then to run the demo in the 
 
 ## Using the component in your projects
 
-Just copy the `side-menu` folder (inculding the html, ts and scss files) in your project. Then include the `SideMenuContentComponent` in the `declarations` array from your `@NgModule`.
+Just copy the `side-menu-content` folder (inculding the html, ts and scss files) in your project. Then include the `SideMenuContentComponent` in the `declarations` array from your `@NgModule`.
 
 ## Items structure
 
@@ -28,12 +45,12 @@ Menu and sub menu items should have the following format:
 ```
 // Base Interface
 export interface MenuOptionModel {
-	iconName: string;
-	displayName: string;
-	component: any;
-	isLogin: boolean;
-	isLogout: boolean;
-	subItems?: Array<MenuOptionModel>;
+    iconName: string;
+    displayName: string;
+    component: any;
+    isLogin: boolean;
+    isLogout: boolean;
+    subItems?: Array<MenuOptionModel>;
 }
 ```
 
@@ -77,7 +94,7 @@ And then in the App component code:
 
 ```
 @Component({
-	templateUrl: 'app.html'
+    templateUrl: 'app.html'
 })
 export class MyApp {
     // ...
@@ -116,7 +133,7 @@ The component also exposes the `collapseAllOptions()` method to reset the state 
 
 ```
 @Component({
-	templateUrl: 'app.html'
+    templateUrl: 'app.html'
 })
 export class MyApp {
     // Get the instance to call the public methods
@@ -124,15 +141,15 @@ export class MyApp {
 
     // ...
 
-    // Redirect the user to the selected page
     public selectOption(option: MenuOptionModel): void {
         this.menuCtrl.close().then(() => {
 
             // Collapse all the options
-		    this.sideMenu.collapseAllOptions();
-
+            this.sideMenu.collapseAllOptions();
+            
             // ...
-		});
-	}
+        
+        });
+    }
 }
 ```

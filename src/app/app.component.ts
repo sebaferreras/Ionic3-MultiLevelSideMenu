@@ -5,14 +5,15 @@ import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform, MenuController } from 'ionic-angular';
 
 // Ionic Native references
-import { StatusBar, Splashscreen } from 'ionic-native';
+import { StatusBar } from '@ionic-native/status-bar';
+import { SplashScreen } from '@ionic-native/splash-screen';
 
 // Pages
 import { HomePage } from '../pages/home/home';
 import { DetailsPage } from '../pages/details/details';
 
 // Models
-import { MenuOptionModel, SideMenuContentComponent } from '../shared/side-menu/side-menu';
+import { MenuOptionModel, SideMenuContentComponent } from '../shared/side-menu-content/side-menu-content.component';
 
 @Component({
 	templateUrl: 'app.html'
@@ -27,7 +28,9 @@ export class MyApp {
 	public options: Array<MenuOptionModel>;
 
 	constructor(private platform: Platform,
-		private menuCtrl: MenuController) {
+				private statusBar: StatusBar,
+				private splashScreen: SplashScreen,
+				private menuCtrl: MenuController) {
 		this.initializeApp();
 	}
 
@@ -35,8 +38,8 @@ export class MyApp {
 		this.platform.ready().then(() => {
 			// Okay, so the platform is ready and our plugins are available.
 			// Here you can do any higher level native things you might need.
-			StatusBar.styleDefault();
-			Splashscreen.hide();
+			this.statusBar.styleDefault();
+			this.splashScreen.hide();
 
 			// TODO: replace by real options
 			this.options = this.sideMenu.getSampleMenuOptions(DetailsPage);
