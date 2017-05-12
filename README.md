@@ -12,8 +12,6 @@ The component also supports two different modes: default and accordion.
 ## Ionic info
 
 ```
-Your system information:
-
 Cordova CLI: 6.4.0
 Ionic Framework Version: 3.2.1
 Ionic CLI Version: 2.2.1
