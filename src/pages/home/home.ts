@@ -1,4 +1,4 @@
-// Angular references
+// Angular
 import { Component } from '@angular/core';
 
 @Component({

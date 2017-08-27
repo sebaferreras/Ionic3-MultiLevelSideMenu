@@ -1,10 +1,10 @@
-// Angular references
+// Angular
 import { Component, ViewChild } from '@angular/core';
 
-// Ionic references
-import { Nav, Platform, MenuController } from 'ionic-angular';
+// Ionic
+import { Nav, Platform, MenuController, AlertController } from 'ionic-angular';
 
-// Ionic Native references
+// Ionic Native
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
@@ -25,24 +25,112 @@ export class MyApp {
 	@ViewChild(SideMenuContentComponent) sideMenu: SideMenuContentComponent;
 
 	public rootPage: any = HomePage;
+
+	public enableAccordion: boolean = true;
 	public options: Array<MenuOptionModel>;
 
 	constructor(private platform: Platform,
 				private statusBar: StatusBar,
 				private splashScreen: SplashScreen,
+				private alertCtrl: AlertController,
 				private menuCtrl: MenuController) {
 		this.initializeApp();
 	}
 
 	initializeApp() {
 		this.platform.ready().then(() => {
-			// Okay, so the platform is ready and our plugins are available.
-			// Here you can do any higher level native things you might need.
 			this.statusBar.styleDefault();
 			this.splashScreen.hide();
 
-			// TODO: replace by real options
-			this.options = this.sideMenu.getSampleMenuOptions(DetailsPage);
+			// Initialize some options
+			this.initializeOptions(DetailsPage);
+		});
+	}
+
+	private initializeOptions(targetComponent?: any): void {
+		this.options = new Array<MenuOptionModel>();
+
+		// Load simple menu options
+		// ------------------------------------------
+		this.options.push({
+			iconName: 'home',
+			displayName: `Option 1`,
+			component: targetComponent
+		});
+
+		this.options.push({
+			iconName: 'analytics',
+			displayName: `Option 2`,
+			component: targetComponent
+		});
+
+		this.options.push({
+			iconName: 'apps',
+			displayName: `Option 3`,
+			component: targetComponent
+		});
+
+		// Load options with nested items (with icons)
+		// -----------------------------------------------
+		this.options.push({
+			displayName: `Sub options with icons`,
+			component: targetComponent,
+			subItems: [
+				{
+					iconName: 'basket',
+					displayName: `Sub Option 1`,
+					component: targetComponent
+				},
+				{
+					iconName: 'bookmark',
+					displayName: `Sub Option 2`,
+					component: targetComponent
+				}
+			]
+		});
+
+		// Load options with nested items (without icons)
+		// -----------------------------------------------
+		this.options.push({
+			displayName: `Sub options without icons`,
+			component: targetComponent,
+			subItems: [
+				{
+					displayName: `Sub Option 4`,
+					component: targetComponent
+				},
+				{
+					displayName: `Sub Option 5`,
+					component: targetComponent
+				},
+				{
+					displayName: `Sub Option 6`,
+					component: targetComponent
+				},
+				{
+					displayName: `Sub Option 7`,
+					component: targetComponent
+				}
+			]
+		});
+
+		// Load special options
+		// -----------------------------------------------
+		this.options.push({
+			displayName: `Special options`,
+			component: targetComponent,
+			subItems: [
+				{
+					iconName: 'log-in',
+					displayName: `Login`,
+					isLogin: true
+				},
+				{
+					iconName: 'log-out',
+					displayName: `Logout`,
+					isLogout: true
+				}
+			]
 		});
 	}
 
@@ -53,8 +141,14 @@ export class MyApp {
 			// Collapse all the options
 			this.sideMenu.collapseAllOptions();
 
-			// Redirect to the selected page
-			this.navCtrl.push(option.component || DetailsPage, { 'title': option.displayName });
+			if (option.isLogin) {
+				this.presentAlert('You\'ve clicked the login option!');
+			} else if (option.isLogout) {
+				this.presentAlert('You\'ve clicked the logout option!');
+			} else {
+				// Redirect to the selected page
+				this.navCtrl.push(option.component || DetailsPage, { 'title': option.displayName });
+			}
 		});
 	}
 
@@ -62,4 +156,14 @@ export class MyApp {
 		// Collapse all the options
 		this.sideMenu.collapseAllOptions();
 	}
+
+	public presentAlert(message: string): void {
+		let alert = this.alertCtrl.create({
+			title: 'Information',
+			message: message,
+			buttons: ['Ok']
+		});
+		alert.present();
+	}
+
 }

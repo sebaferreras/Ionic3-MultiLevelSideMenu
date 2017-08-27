@@ -14,7 +14,7 @@
 
             <ion-list no-margin class="accordion-menu">
                 <ion-item class="header" tappable (click)="toggleItemOptions(options, headerIcon, option.subItems.length)">
-                    <ion-icon #headerIcon [id]="'header-icon-' + i" class="header-icon" [name]="option.iconName" item-left></ion-icon>
+                    <ion-icon #headerIcon [id]="'header-icon-' + i" class="header-icon" [name]="option.iconName || this.arrowIcon" item-left></ion-icon>
                     {{ option.displayName }}
                 </ion-item>
                 <div #options [id]="'sub-item-' + i" class="options">

@@ -1,6 +1,6 @@
 {
   "name": "multilevelsidemenu",
   "app_id": "d90d8463",
-  "v2": true,
-  "typescript": true
+  "integrations": {},
+  "type": "ionic-angular"
 }

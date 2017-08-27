@@ -1,15 +1,29 @@
-// Angular references
+// Angular
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, Renderer, ViewChildren, QueryList } from '@angular/core';
 
+// Ionoc
 import { Platform, DomController } from 'ionic-angular';
 
-// Base Interface
+// MenuOptionModel Interface
 export interface MenuOptionModel {
-	iconName: string;
+
+	// If the option has sub items and the iconName is null,
+	// the default icon will be 'ios-arrow-down'.
+	iconName?: string;
+
+	// The name to display in the menu
 	displayName: string;
-	component: any;
-	isLogin: boolean;
-	isLogout: boolean;
+
+	// Target component (or null if it's a "special option" like login/logout)
+	component?: any;
+
+	// Boolean properties to know how to handle the selected option
+	// if it's a "special option". You can add some more properties to handle
+	// changing the language and so on...
+	isLogin?: boolean;
+	isLogout?: boolean;
+
+	// List of sub items if any
 	subItems?: Array<MenuOptionModel>;
 }
 
@@ -32,7 +46,10 @@ export class SideMenuContentComponent {
 	@Input() mdItemHeight: number = 50;
 	@Input() wpItemHeight: number = 50;
 
-	// Outputs
+	// Default arrow icon
+	@Input() arrowIcon: string = 'ios-arrow-down';
+
+	// Outputs: return the selected option to the caller
 	@Output() selectOption = new EventEmitter<any>();
 
 	constructor(private platform: Platform,
@@ -77,103 +94,6 @@ export class SideMenuContentComponent {
 		this.headerIcons.forEach(headerIcon => {
 			this.resetIcon(headerIcon.nativeElement);
 		});
-	}
-
-	// Create fake options to populate the side menu
-	public getSampleMenuOptions(targetComponent?: any): Array<MenuOptionModel> {
-		let options = new Array<MenuOptionModel>();
-
-		// Load simple menu options
-		// ------------------------------------------
-		options.push({
-			iconName: 'ios-home',
-			displayName: `Option 1`,
-			isLogin: false,
-			isLogout: false,
-			component: targetComponent || null
-		});
-
-		options.push({
-			iconName: 'ios-analytics',
-			displayName: `Option 2`,
-			isLogin: false,
-			isLogout: false,
-			component: targetComponent || null
-		});
-
-		options.push({
-			iconName: 'ios-apps',
-			displayName: `Option 3`,
-			isLogin: false,
-			isLogout: false,
-			component: targetComponent || null
-		});
-
-		// Load options with nested items
-		// ------------------------------------------
-		options.push({
-			iconName: 'ios-arrow-down',
-			displayName: `Sub options with icons`,
-			component: targetComponent || null,
-			isLogin: false,
-			isLogout: false,
-			subItems: [
-				{
-					iconName: 'ios-basket',
-					displayName: `Sub Option 1`,
-					component: targetComponent || null,
-					isLogin: false,
-					isLogout: false
-				},
-				{
-					iconName: 'ios-bookmark',
-					displayName: `Sub Option 2`,
-					component: targetComponent || null,
-					isLogin: false,
-					isLogout: false
-				}
-			]
-		});
-
-		options.push({
-			iconName: 'ios-arrow-down',
-			displayName: `Sub options without icons`,
-			component: targetComponent || null,
-			isLogin: false,
-			isLogout: false,
-			subItems: [
-				{
-					iconName: null,
-					displayName: `Sub Option 4`,
-					component: targetComponent || null,
-					isLogin: false,
-					isLogout: false
-				},
-				{
-					iconName: null,
-					displayName: `Sub Option 5`,
-					component: targetComponent || null,
-					isLogin: false,
-					isLogout: false
-				},
-				{
-					iconName: null,
-					displayName: `Sub Option 6`,
-					component: targetComponent || null,
-					isLogin: false,
-					isLogout: false
-				},
-				{
-					iconName: null,
-					displayName: `Sub Option 7`,
-					component: targetComponent || null,
-					isLogin: false,
-					isLogout: false
-				}
-			]
-		});
-
-		return options;
 	}
 
 	// ---------------------------------------------------

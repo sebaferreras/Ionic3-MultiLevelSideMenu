@@ -1,7 +1,7 @@
-// Angular references
+// Angular
 import { Component } from '@angular/core';
 
-// Ionic references
+// Ionic
 import { NavParams } from 'ionic-angular';
 
 @Component({
