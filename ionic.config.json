@@ -1,6 +1,8 @@
 {
-  "name": "multilevelsidemenu",
+  "name": "Ionic3_MultilevelSidemenu",
   "app_id": "d90d8463",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "ionic-angular"
 }

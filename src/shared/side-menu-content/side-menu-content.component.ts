@@ -1,5 +1,5 @@
 // Angular
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, Renderer, ViewChildren, QueryList } from '@angular/core';
+import { Component, Input, Output, Renderer2, EventEmitter, ChangeDetectionStrategy, ViewChildren, QueryList } from '@angular/core'; // tslint:disable-line
 
 // Ionoc
 import { Platform, DomController } from 'ionic-angular';
@@ -28,14 +28,14 @@ export interface MenuOptionModel {
 }
 
 @Component({
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	selector: 'side-menu-content',
-	templateUrl: 'side-menu-content.component.html'
+	templateUrl: 'side-menu-content.component.html',
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SideMenuContentComponent {
 
 	@ViewChildren('options') optionDivs: QueryList<any>;
-	@ViewChildren('headerIcon') headerIcons;
+	@ViewChildren('headerIcon') headerIcons: QueryList<any>;
 
 	// Main inputs
 	@Input() options: Array<MenuOptionModel>;
@@ -53,8 +53,8 @@ export class SideMenuContentComponent {
 	@Output() selectOption = new EventEmitter<any>();
 
 	constructor(private platform: Platform,
-				private renderer: Renderer,
-        		private domCtrl: DomController) { }
+				private renderer: Renderer2,
+				private domCtrl: DomController) { }
 
 	// ---------------------------------------------------
 	// PUBLIC methods
@@ -103,19 +103,19 @@ export class SideMenuContentComponent {
 	// Toggle the sub items of the selected option
 	private toggleOptionSubItems(optionsContainer: any, elementHeight: number, itemsCount: number): void {
 		this.domCtrl.write(() => {
-            this.subItemsAreExpanded(optionsContainer)
-                ? this.renderer.setElementStyle(optionsContainer, 'height', '0px')
-                : this.renderer.setElementStyle(optionsContainer, 'height', `${(elementHeight * itemsCount)}px`);
-        });
+			this.subItemsAreExpanded(optionsContainer)
+				? this.renderer.setStyle(optionsContainer, 'height', '0px')
+				: this.renderer.setStyle(optionsContainer, 'height', `${(elementHeight * itemsCount)}px`);
+		});
 	}
 
 	// Toggle the arrow icon of the selected option
 	private toggleOptionIcon(arrowIcon: any): void {
 		this.domCtrl.write(() => {
-            this.iconIsRotated(arrowIcon)
-                ? this.renderer.setElementClass(arrowIcon, 'rotate', false)
-                : this.renderer.setElementClass(arrowIcon, 'rotate', true);
-        });
+			this.iconIsRotated(arrowIcon)
+				? this.renderer.removeClass(arrowIcon, 'rotate')
+				: this.renderer.addClass(arrowIcon, 'rotate');
+		});
 	}
 
 	// Reset the arrow icon of all the options except the selected option
@@ -123,8 +123,8 @@ export class SideMenuContentComponent {
 		this.headerIcons.forEach(headerIcon => {
 			let iconElement = headerIcon.nativeElement;
 			if (iconElement.id !== selectedArrowIcon.id && this.iconIsRotated(iconElement)) {
-                this.resetIcon(iconElement);
-            }
+				this.resetIcon(iconElement);
+			}
 		});
 	}
 
@@ -151,14 +151,14 @@ export class SideMenuContentComponent {
 	// Collapse the sub items of the selected option
 	private hideSubItems(optionsContainer: any): void {
 		this.domCtrl.write(() => {
-            this.renderer.setElementStyle(optionsContainer, 'height', '0px');
-        });
+			this.renderer.setStyle(optionsContainer, 'height', '0px');
+		});
 	}
 
 	// Reset the arrow icon of the selected option
 	private resetIcon(arrowIcon: any): void {
 		this.domCtrl.write(() => {
-            this.renderer.setElementClass(arrowIcon, 'rotate', false);
-        });
+			this.renderer.removeClass(arrowIcon, 'rotate');
+		});
 	}
 }

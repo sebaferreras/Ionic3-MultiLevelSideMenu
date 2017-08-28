@@ -12,16 +12,30 @@ The component also supports two different modes: default and accordion.
 ## Ionic info
 
 ```
-Cordova CLI: 6.4.0
-Ionic Framework Version: 3.2.1
-Ionic CLI Version: 2.2.1
-Ionic App Lib Version: 2.2.0
-Ionic App Scripts Version: 1.3.7
-ios-deploy version: 1.9.0
-ios-sim version: 5.0.8
-OS: macOS Sierra
-Node Version: v6.9.2
-Xcode version: Xcode 8.3.2 Build version 8E2002
+Cli packages: (/usr/local/lib/node_modules)
+
+    @ionic/cli-utils  : 1.9.2
+    ionic (Ionic CLI) : 3.9.2
+
+Global packages:
+
+    Cordova CLI : 7.0.1
+
+Local packages:
+
+    @ionic/app-scripts : 2.1.4
+    Cordova Platforms  : android 6.1.0 ios 4.4.0
+    Ionic Framework    : ionic-angular 3.6.0
+
+System:
+
+    Android SDK Tools : 25.2.5
+    ios-deploy        : 1.9.0
+    ios-sim           : 5.0.8
+    Node              : v6.9.2
+    npm               : 4.2.0
+    OS                : macOS Sierra
+    Xcode             : Xcode 8.3.3 Build version 8E3004b
 ```
 
 ## Ionic View
@@ -41,14 +55,27 @@ Just copy the `side-menu-content` folder (inculding the html, ts and scss files)
 Menu and sub menu items should have the following format:
 
 ```
-// Base Interface
+// MenuOptionModel Interface
 export interface MenuOptionModel {
-    iconName: string;
-    displayName: string;
-    component: any;
-    isLogin: boolean;
-    isLogout: boolean;
-    subItems?: Array<MenuOptionModel>;
+
+	// If the option has sub items and the iconName is null,
+	// the default icon will be 'ios-arrow-down'.
+	iconName?: string;
+
+	// The name to display in the menu
+	displayName: string;
+
+	// Target component (or null if it's a "special option" like login/logout)
+	component?: any;
+
+	// Boolean properties to know how to handle the selected option
+	// if it's a "special option". You can add some more properties to handle
+	// changing the language and so on...
+	isLogin?: boolean;
+	isLogout?: boolean;
+
+	// List of sub items if any
+	subItems?: Array<MenuOptionModel>;
 }
 ```
 
@@ -56,25 +83,25 @@ So an item with nested sub items would look like this:
 
 ```
 let menuOption: MenuOptionModel = {
-    iconName: 'ios-arrow-down',
     displayName: `Option Name`,
     component: PageName,
-    isLogin: false,
-    isLogout: false,
     subItems: [
         {
+            // With icon
             iconName: 'ios-basket',
             displayName: `Sub Option 1`,
-            component: PageName,
-            isLogin: false,
-            isLogout: false
+            component: PageName
         },
         {
-            iconName: 'ios-bookmark',
+            // Without icon
             displayName: `Sub Option 2`,
-            component: PageName,
-            isLogin: false,
-            isLogout: false
+            component: PageName
+        },
+        {
+            // Special option
+            iconName: 'log-in',
+            displayName: 'Login',
+            isLogin: true
         }
     ]
 };
@@ -127,7 +154,7 @@ You can set a custom height for the items for each mode (the default **50px** va
 
 ## Some other public methods
 
-The component also exposes the `collapseAllOptions()` method to reset the state of the options when needed (when closing the menu for instance):
+The component also exposes the `collapseAllOptions()` method to reset the state of the options when needed (after selecting an option for example):
 
 ```
 @Component({
