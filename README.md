@@ -42,6 +42,12 @@ System:
 
 If you want to take a look at this demo using Ionic View, use this code: **d90d8463**
 
+## Online demo
+
+You can also take a look at the demo online in the following *Stackblitz* project:
+
+**https://multi-level-side-menu.stackblitz.io**
+
 ## Running the demo
 
 Inside of the project folder, run `npm install` and then to run the demo in the browser `ionic serve [-t android/ios]`
@@ -68,9 +74,8 @@ export interface MenuOptionModel {
 	// Target component (or null if it's a "special option" like login/logout)
 	component?: any;
 
-	// Boolean properties to know how to handle the selected option
-	// if it's a "special option". You can add some more properties to handle
-	// changing the language and so on...
+	// Boolean properties to know how to handle the selected option if it's a "special option". 
+        // You can add some more properties to handle changing the language and so on...
 	isLogin?: boolean;
 	isLogout?: boolean;
 
@@ -83,18 +88,17 @@ So an item with nested sub items would look like this:
 
 ```
 let menuOption: MenuOptionModel = {
-    displayName: `Option Name`,
-    component: PageName,
+    displayName: 'Option Name',
     subItems: [
         {
             // With icon
             iconName: 'ios-basket',
-            displayName: `Sub Option 1`,
+            displayName: 'Sub Option 1',
             component: PageName
         },
         {
             // Without icon
-            displayName: `Sub Option 2`,
+            displayName: 'Sub Option 2',
             component: PageName
         },
         {

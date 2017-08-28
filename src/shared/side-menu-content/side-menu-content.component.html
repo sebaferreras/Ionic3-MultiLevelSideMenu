@@ -16,12 +16,12 @@
 
                 <!-- Header -->
                 <ion-item class="header" tappable (tap)="toggleItemOptions(options, headerIcon, option.subItems.length)">
-                    <ion-icon #headerIcon class="header-icon" [name]="option.iconName || this.arrowIcon" item-left></ion-icon>
+                    <ion-icon #headerIcon [id]="'header-icon-' + i" class="header-icon" [name]="option.iconName || this.arrowIcon" item-left></ion-icon>
                     {{ option.displayName }}
                 </ion-item>
 
                 <!-- Sub items -->
-                <div #options class="options">
+                <div #options [id]="'sub-item-' + i" class="options">
                     <ng-template ngFor let-item [ngForOf]="option.subItems">
                         <ion-item tappable (tap)="select(item)">
                             <ion-icon *ngIf="item.iconName" [name]="item.iconName" item-left></ion-icon>

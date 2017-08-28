@@ -74,7 +74,6 @@ export class MyApp {
 		// -----------------------------------------------
 		this.options.push({
 			displayName: `Sub options with icons`,
-			component: targetComponent,
 			subItems: [
 				{
 					iconName: 'basket',
@@ -93,7 +92,6 @@ export class MyApp {
 		// -----------------------------------------------
 		this.options.push({
 			displayName: `Sub options without icons`,
-			component: targetComponent,
 			subItems: [
 				{
 					displayName: `Sub Option 4`,
@@ -118,7 +116,6 @@ export class MyApp {
 		// -----------------------------------------------
 		this.options.push({
 			displayName: `Special options`,
-			component: targetComponent,
 			subItems: [
 				{
 					iconName: 'log-in',
