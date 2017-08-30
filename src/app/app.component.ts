@@ -1,3 +1,4 @@
+import { SideMenuSettings } from './../shared/side-menu-content/side-menu-content.component';
 // Angular
 import { Component, ViewChild } from '@angular/core';
 
@@ -26,8 +27,15 @@ export class MyApp {
 
 	public rootPage: any = HomePage;
 
-	public enableAccordion: boolean = true;
+	// Options to show in the SideMenuComponent
 	public options: Array<MenuOptionModel>;
+
+	// Settings for the SideMenuComponent
+	public sideMenuSettings: SideMenuSettings = {
+		accordionMode: true,
+		showSelectedOption: true,
+		selectedOptionClass: 'my-selected-option'
+	};
 
 	constructor(private platform: Platform,
 				private statusBar: StatusBar,
@@ -43,47 +51,50 @@ export class MyApp {
 			this.splashScreen.hide();
 
 			// Initialize some options
-			this.initializeOptions(DetailsPage);
+			this.initializeOptions();
 		});
 	}
 
-	private initializeOptions(targetComponent?: any): void {
+	private initializeOptions(): void {
 		this.options = new Array<MenuOptionModel>();
 
 		// Load simple menu options
 		// ------------------------------------------
 		this.options.push({
 			iconName: 'home',
-			displayName: `Option 1`,
-			component: targetComponent
+			displayName: 'Home',
+			component: HomePage,
+			
+			// This option is already selected
+			selected: true
 		});
 
 		this.options.push({
 			iconName: 'analytics',
-			displayName: `Option 2`,
-			component: targetComponent
+			displayName: 'Option 1',
+			component: DetailsPage
 		});
 
 		this.options.push({
 			iconName: 'apps',
-			displayName: `Option 3`,
-			component: targetComponent
+			displayName: 'Option 2',
+			component: DetailsPage
 		});
 
 		// Load options with nested items (with icons)
 		// -----------------------------------------------
 		this.options.push({
-			displayName: `Sub options with icons`,
+			displayName: 'Sub options with icons',
 			subItems: [
 				{
 					iconName: 'basket',
-					displayName: `Sub Option 1`,
-					component: targetComponent
+					displayName: 'Sub Option 1',
+					component: DetailsPage
 				},
 				{
 					iconName: 'bookmark',
-					displayName: `Sub Option 2`,
-					component: targetComponent
+					displayName: 'Sub Option 2',
+					component: DetailsPage
 				}
 			]
 		});
@@ -91,23 +102,23 @@ export class MyApp {
 		// Load options with nested items (without icons)
 		// -----------------------------------------------
 		this.options.push({
-			displayName: `Sub options without icons`,
+			displayName: 'Sub options without icons',
 			subItems: [
 				{
-					displayName: `Sub Option 4`,
-					component: targetComponent
+					displayName: 'Sub Option 4',
+					component: DetailsPage
 				},
 				{
-					displayName: `Sub Option 5`,
-					component: targetComponent
+					displayName: 'Sub Option 5',
+					component: DetailsPage
 				},
 				{
-					displayName: `Sub Option 6`,
-					component: targetComponent
+					displayName: 'Sub Option 6',
+					component: DetailsPage
 				},
 				{
-					displayName: `Sub Option 7`,
-					component: targetComponent
+					displayName: 'Sub Option 7',
+					component: DetailsPage
 				}
 			]
 		});
@@ -115,36 +126,50 @@ export class MyApp {
 		// Load special options
 		// -----------------------------------------------
 		this.options.push({
-			displayName: `Special options`,
+			displayName: 'Special options',
 			subItems: [
 				{
 					iconName: 'log-in',
-					displayName: `Login`,
-					isLogin: true
+					displayName: 'Login',
+					custom: {
+						isLogin: true
+					}
 				},
 				{
 					iconName: 'log-out',
-					displayName: `Logout`,
-					isLogout: true
+					displayName: 'Logout',
+					custom: {
+						isLogout: true
+					}
+				},
+				{
+					iconName: 'globe',
+					displayName: 'Open Google',
+					custom: {
+						isExternalLink: true,
+						externalUrl: 'http://www.google.com'
+					}
 				}
 			]
 		});
 	}
 
-	// Redirect the user to the selected page
 	public selectOption(option: MenuOptionModel): void {
 		this.menuCtrl.close().then(() => {
 
 			// Collapse all the options
 			this.sideMenu.collapseAllOptions();
 
-			if (option.isLogin) {
+			if (option.custom && option.custom.isLogin) {
 				this.presentAlert('You\'ve clicked the login option!');
-			} else if (option.isLogout) {
+			} else if (option.custom && option.custom.isLogout) {
 				this.presentAlert('You\'ve clicked the logout option!');
+			} else if(option.custom && option.custom.isExternalLink) {
+				let url = option.custom.externalUrl;
+				window.open(url, '_blank');
 			} else {
 				// Redirect to the selected page
-				this.navCtrl.push(option.component || DetailsPage, { 'title': option.displayName });
+				this.navCtrl.setRoot(option.component || DetailsPage, { 'title': option.displayName });
 			}
 		});
 	}

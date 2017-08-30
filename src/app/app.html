@@ -1,14 +1,14 @@
 <ion-menu persistent="true" [content]="content" (ionClose)="collapseMenuOptions()">
 	<ion-header>
 		<ion-toolbar color="primary">
-			<ion-title>{{ (enableAccordion ? 'Accordion' : 'Default') + ' menu' }}</ion-title>
+			<ion-title>{{ (sideMenuSettings.accordionMode ? 'Accordion' : 'Default') + ' menu' }}</ion-title>
 		</ion-toolbar>
 	</ion-header>
 
 	<ion-content>
 
 		<!-- Side Menu -->
-		<side-menu-content [accordionMode]="enableAccordion" [options]="options" (selectOption)="selectOption($event)"></side-menu-content>
+		<side-menu-content [settings]="sideMenuSettings" [options]="options" (selectOption)="selectOption($event)"></side-menu-content>
 
 	</ion-content>
 </ion-menu>

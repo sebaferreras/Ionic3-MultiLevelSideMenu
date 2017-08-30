@@ -1,10 +1,10 @@
 // Angular
-import { Component, Input, Output, Renderer2, EventEmitter, ChangeDetectionStrategy, ViewChildren, QueryList } from '@angular/core'; // tslint:disable-line
+import { Component, Input, Output, Renderer2, EventEmitter, ChangeDetectionStrategy, ViewChildren, QueryList, NgZone, ChangeDetectorRef } from '@angular/core'; // tslint:disable-line
 
 // Ionoc
-import { Platform, DomController } from 'ionic-angular';
+import { Platform, DomController, Events } from 'ionic-angular';
 
-// MenuOptionModel Interface
+// MenuOptionModel interface
 export interface MenuOptionModel {
 
 	// If the option has sub items and the iconName is null,
@@ -17,14 +17,37 @@ export interface MenuOptionModel {
 	// Target component (or null if it's a "special option" like login/logout)
 	component?: any;
 
-	// Boolean properties to know how to handle the selected option
-	// if it's a "special option". You can add some more properties to handle
-	// changing the language and so on...
-	isLogin?: boolean;
-	isLogout?: boolean;
+	// Here you can pass whatever you need, and will be returned if this
+	// option is selected. That way you can handle login/logout options,
+	// changing the language, and son on...
+	custom?: any;
+
+	// Set if this option is selected by default
+	selected?: boolean;
 
 	// List of sub items if any
 	subItems?: Array<MenuOptionModel>;
+}
+
+// SideMenuSettings interface
+export interface SideMenuSettings {
+	accordionMode?: boolean;
+	itemHeight?: {
+		ios?: number,
+		md?: number,
+		wp?: number
+	};
+	arrowIcon?: string;
+	showSelectedOption?: boolean;
+	selectedOptionClass?: string;
+}
+
+// SideMenuRedirectEvent constant
+export const SideMenuRedirectEvent: string = 'sidemenu:redirect';
+
+// SideMenuRedirectEventData interface
+export interface SideMenuRedirectEventData {
+	displayName?: string;
 }
 
 @Component({
@@ -38,23 +61,65 @@ export class SideMenuContentComponent {
 	@ViewChildren('headerIcon') headerIcons: QueryList<any>;
 
 	// Main inputs
-	@Input() options: Array<MenuOptionModel>;
-	@Input() accordionMode: boolean = false;
+	public menuSettings: SideMenuSettings;
+	public menuOptions: Array<MenuOptionModel>;
 
-	// Inputs for custom item sizes
-	@Input() iosItemHeight: number = 50;
-	@Input() mdItemHeight: number = 50;
-	@Input() wpItemHeight: number = 50;
+	// Private properties
+	private selectedOption: MenuOptionModel;
+	private parents: Map<string, MenuOptionModel>;
 
-	// Default arrow icon
-	@Input() arrowIcon: string = 'ios-arrow-down';
+	@Input('options')
+	set options(value: Array<MenuOptionModel>) {
+		if (value) {
+			this.menuOptions = value;
+
+			if (!this.menuSettings || this.menuSettings.showSelectedOption) {
+				this.selectedOption = this.menuOptions.find(option => option.selected);
+
+				this.parents = new Map<string, MenuOptionModel>();
+
+				this.menuOptions.forEach(option => {
+					if (option.subItems) {
+						option.subItems.forEach(subItem => {
+							this.parents.set(subItem.displayName.toLowerCase(), option);
+						});
+					}
+				});
+			}
+		}
+	}
+
+	@Input('settings')
+	set settings(value: SideMenuSettings) {
+		if (value) {
+			this.menuSettings = value;
+			this.mergeSettings();
+
+			if (!this.menuSettings.showSelectedOption && this.selectedOption) {
+				let parent = this.parents.get(this.selectedOption.displayName.toLowerCase());
+
+				// Unselect the parent and the child
+				parent.selected = false;
+				this.selectedOption.selected = false;
+
+				// Reset the reference to the selected option
+				this.selectedOption = null;
+			}
+		}
+	}
 
 	// Outputs: return the selected option to the caller
 	@Output() selectOption = new EventEmitter<any>();
 
 	constructor(private platform: Platform,
-				private renderer: Renderer2,
-				private domCtrl: DomController) { }
+		private renderer: Renderer2,
+		private domCtrl: DomController,
+		private eventsCtrl: Events,
+		private cdRef: ChangeDetectorRef) {
+		this.eventsCtrl.subscribe(SideMenuRedirectEvent, (data: SideMenuRedirectEventData) => {
+			this.updateSelectedOption(data);
+		});
+	}
 
 	// ---------------------------------------------------
 	// PUBLIC methods
@@ -62,6 +127,9 @@ export class SideMenuContentComponent {
 
 	// Send the selected option to the caller component
 	public select(option: MenuOptionModel): void {
+		if (this.menuSettings.showSelectedOption) {
+			this.setSelectedOption(option);
+		}
 		this.selectOption.emit(option);
 	}
 
@@ -69,17 +137,17 @@ export class SideMenuContentComponent {
 	public toggleItemOptions(optionsDivElement: any, arrowIcon: any, itemsCount: number): void {
 		let itemHeight;
 
-		if (this.accordionMode) {
+		if (this.menuSettings.accordionMode) {
 			this.collapseAllOptionsExceptSelected(optionsDivElement);
 			this.resetAllIconsExceptSelected(arrowIcon);
 		}
 
 		if (this.platform.is('ios')) {
-			itemHeight = this.iosItemHeight;
+			itemHeight = this.menuSettings.itemHeight.ios;
 		} else if (this.platform.is('windows')) {
-			itemHeight = this.wpItemHeight;
+			itemHeight = this.menuSettings.itemHeight.wp;
 		} else {
-			itemHeight = this.mdItemHeight;
+			itemHeight = this.menuSettings.itemHeight.md;
 		}
 
 		this.toggleOptionSubItems(optionsDivElement, itemHeight + 1, itemsCount);
@@ -99,6 +167,72 @@ export class SideMenuContentComponent {
 	// ---------------------------------------------------
 	// PRIVATE methods
 	// ---------------------------------------------------
+
+	// Method that resets the selected option and its parent
+	private resetSelectedOption() {
+		if (!this.selectedOption) return;
+
+		this.resetSelectedOptionParent();
+		this.selectedOption.selected = false;
+		this.selectedOption = null;
+	}
+
+	// Method that resets the parent of the current selected option
+	private resetSelectedOptionParent() {
+		let parent = this.parents.get(this.selectedOption.displayName.toLowerCase());
+		if (parent) {
+			parent.selected = false;
+		}
+	}
+
+	// Method that set the selected option and its parent
+	private setSelectedOption(option: MenuOptionModel) {
+		if (!option.component) return;
+
+		this.resetSelectedOption();
+
+		this.setOptionParentAsSelected(option);
+		option.selected = true;
+		this.selectedOption = option;
+	}
+
+	// Method that sets as selected the parent of the given option
+	private setOptionParentAsSelected(option: MenuOptionModel) {
+		let parent = this.parents.get(option.displayName.toLowerCase());
+		if (parent) {
+			parent.selected = true;
+		}
+	}
+
+	// Update the selected option
+	private updateSelectedOption(data: SideMenuRedirectEventData): void {
+
+		if (!data.displayName) {
+			return;
+		}
+
+		let targetOption;
+
+		this.menuOptions.forEach(option => {
+			if (option.displayName.toLowerCase() === data.displayName.toLowerCase()) {
+				targetOption = option;
+			} else {
+				if (option.subItems) {
+					option.subItems.forEach(subItem => {
+						if (subItem.displayName.toLowerCase() === data.displayName.toLowerCase()) {
+							targetOption = subItem;
+						}
+					});
+				}
+			}
+		});
+
+		if (targetOption) {
+			this.resetSelectedOption();
+			this.setSelectedOption(targetOption);
+			this.cdRef.detectChanges();
+		}
+	}
 
 	// Toggle the sub items of the selected option
 	private toggleOptionSubItems(optionsContainer: any, elementHeight: number, itemsCount: number): void {
@@ -160,5 +294,47 @@ export class SideMenuContentComponent {
 		this.domCtrl.write(() => {
 			this.renderer.removeClass(arrowIcon, 'rotate');
 		});
+	}
+
+	// Merge the settings received with the default settings
+	private mergeSettings(): void {
+		const defaultSettings: SideMenuSettings = {
+			accordionMode: false,
+			itemHeight: {
+				ios: 50,
+				md: 50,
+				wp: 50
+			},
+			arrowIcon: 'ios-arrow-down',
+			showSelectedOption: false,
+			selectedOptionClass: 'selected-option'
+		}
+
+		if (!this.menuSettings) {
+			// Use the default values
+			this.menuSettings = defaultSettings;
+			return;
+		}
+
+		if (!this.menuSettings.itemHeight) {
+			this.menuSettings.itemHeight = defaultSettings.itemHeight;
+		} else {
+			this.menuSettings.itemHeight.ios = this.isDefinedAndPositive(this.menuSettings.itemHeight.ios) ? this.menuSettings.itemHeight.ios : defaultSettings.itemHeight.ios;
+			this.menuSettings.itemHeight.md = this.isDefinedAndPositive(this.menuSettings.itemHeight.md) ? this.menuSettings.itemHeight.md : defaultSettings.itemHeight.md;
+			this.menuSettings.itemHeight.wp = this.isDefinedAndPositive(this.menuSettings.itemHeight.wp) ? this.menuSettings.itemHeight.wp : defaultSettings.itemHeight.wp;
+		}
+
+		this.menuSettings.showSelectedOption = this.isDefined(this.menuSettings.showSelectedOption) ? this.menuSettings.showSelectedOption : defaultSettings.showSelectedOption;
+		this.menuSettings.accordionMode = this.isDefined(this.menuSettings.accordionMode) ? this.menuSettings.accordionMode : defaultSettings.accordionMode;
+		this.menuSettings.arrowIcon = this.isDefined(this.menuSettings.arrowIcon) ? this.menuSettings.arrowIcon : defaultSettings.arrowIcon;
+		this.menuSettings.selectedOptionClass = this.isDefined(this.menuSettings.selectedOptionClass) ? this.menuSettings.selectedOptionClass : defaultSettings.selectedOptionClass;
+	}
+
+	private isDefined(property: any): boolean {
+		return property !== null && property !== undefined;
+	}
+
+	private isDefinedAndPositive(property: any): boolean {
+		return this.isDefined(property) && !isNaN(property) && property > 0;
 	}
 }

@@ -27,15 +27,6 @@ Local packages:
     Cordova Platforms  : android 6.1.0 ios 4.4.0
     Ionic Framework    : ionic-angular 3.6.0
 
-System:
-
-    Android SDK Tools : 25.2.5
-    ios-deploy        : 1.9.0
-    ios-sim           : 5.0.8
-    Node              : v6.9.2
-    npm               : 4.2.0
-    OS                : macOS Sierra
-    Xcode             : Xcode 8.3.3 Build version 8E3004b
 ```
 
 ## Ionic View
@@ -58,29 +49,31 @@ Just copy the `side-menu-content` folder (inculding the html, ts and scss files)
 
 ## Items structure
 
-Menu and sub menu items should have the following format:
+Header options and sub menu items should have the following format:
 
 ```
-// MenuOptionModel Interface
+// MenuOptionModel interface
 export interface MenuOptionModel {
 
-	// If the option has sub items and the iconName is null,
-	// the default icon will be 'ios-arrow-down'.
-	iconName?: string;
+    // If the option has sub items and the iconName is null,
+    // the default icon will be 'ios-arrow-down'.
+    iconName?: string;
 
-	// The name to display in the menu
-	displayName: string;
+    // The name to display in the menu
+    displayName: string;
 
-	// Target component (or null if it's a "special option" like login/logout)
-	component?: any;
+    // Target component (or null if it's a "special option")
+    component?: any;
 
-	// Boolean properties to know how to handle the selected option if it's a "special option". 
-        // You can add some more properties to handle changing the language and so on...
-	isLogin?: boolean;
-	isLogout?: boolean;
+    // Here you can pass whatever you need. That way you can 
+    // handle login/logout options, changing the language, and son on...
+    custom?: any;
 
-	// List of sub items if any
-	subItems?: Array<MenuOptionModel>;
+    // Set if this option is selected by default
+    selected?: boolean;
+
+    // List of sub items if any
+    subItems?: Array<MenuOptionModel>;
 }
 ```
 
@@ -94,18 +87,28 @@ let menuOption: MenuOptionModel = {
             // With icon
             iconName: 'ios-basket',
             displayName: 'Sub Option 1',
-            component: PageName
+            component: SomePage
         },
         {
             // Without icon
             displayName: 'Sub Option 2',
-            component: PageName
+            component: SomeOtherPage
         },
         {
-            // Special option
+            // Special option with icon
             iconName: 'log-in',
             displayName: 'Login',
-            isLogin: true
+            custom: {
+                isLogin: true
+            }
+        },
+        {
+            // Another special option but without icon
+            displayName: 'Spanish',
+            custom: {
+                shouldChangeLanguage: true,
+                targetLanguage: 'ES'
+            }
         }
     ]
 };
@@ -113,7 +116,7 @@ let menuOption: MenuOptionModel = {
 
 ## Selecting options
 
-When an option is selected, the `MenuOptionModel` object is returned to the caller by the `selectOption` event. The `MenuOptionModel` object returned can then be used to check not only if the user should be redirected to a given page but also if the login / logout logic should be executed, and so on...
+When an option is selected, the `MenuOptionModel` object is returned to the caller by the `selectOption` event. The `MenuOptionModel` returned object can then be used to check if we need to push/set as root a new page, or if we need to handle that option as a special option.
 
 ```
 <side-menu-content [options]="options" (selectOption)="selectOption($event)"></side-menu-content>
@@ -129,36 +132,76 @@ export class MyApp {
     // ...
 
     public selectOption(option: MenuOptionModel): void {
-        // ...
+        if (option.custom && option.custom.isLogin) {
+            // Handle the login...
+        } else if (option.custom && option.custom.isLogout) {
+            // Handle the logout...
+        } else if(option.component) {
+            // Push or set as root the option.component page
+        }
     }
 }
 ```
 
-## Accordion mode
+## Settings
 
-To enable the accordion mode just add `[accordionMode]="true"` to the `side-menu-content` element.
-
-```
-<side-menu-content [accordionMode]="true" [options]="options" (selectOption)="selectOption($event)"></side-menu-content>
-```
-
-## Custom item height
-
-The default height for the items is **50px**. The height of the items is used to animate the side menu changes when hidding and showing the sub menu items.
-
-You can set a custom height for the items for each mode (the default **50px** value will be used for the others).
+The component also defines the `SideMenuSettings` interface, to customize the behaviour of the component.
 
 ```
-<side-menu-content [mdItemHeight]="60" ..."></side-menu-content>
+// SideMenuSettings interface
+export interface SideMenuSettings {
+    accordionMode?: boolean;
+    itemHeight?: {
+        ios?: number,
+        md?: number,
+        wp?: number
+    };
+    arrowIcon?: string;
+    showSelectedOption?: boolean;
+    selectedOptionClass?: string;
+}
 ```
+
+The settings should be send to the component using the `settings` property
+
 ```
-<side-menu-content [iosItemHeight]="55" [mdItemHeight]="60" [wpItemHeight]="65"..."></side-menu-content>
+@Component({
+    templateUrl: 'app.html'
+})
+export class MyApp {
+	
+    //...
+
+    // Settings for the SideMenuComponent
+    public sideMenuSettings: SideMenuSettings = {
+        accordionMode: true,
+        showSelectedOption: true,
+        selectedOptionClass: 'my-selected-option'
+    };
+
+    // ...
+
+} 
 ```
+
+And in the view:
+
+```
+<side-menu-content [settings]="sideMenuSettings" [options]="options" (selectOption)="selectOption($event)"></side-menu-content>
+```
+
+Param | Description | Default
+--- | --- | ---
+`accordionMode` | Collapses any opened option when a new option is expanded. | `false`
+`itemHeight` | The height of the items is used to animate the side menu changes when hidding and showing the sub menu items. You can set a custom height for the items for each mode. | `50` for all `md`, `ios` and `wp`
+`arrowIcon` | The Ionic icon name to be used as the arrow in the header options | `ios-arrow-down`
+`showSelectedOption` | If the selected option should be highlighted (if it is a sub item, its parent will also be highlighted) | `false`
+`selectedOptionClass` | Name of the class to be added to the selected option. Only used when `showSelectedOption` is `true` | `selected-option` 
 
 
 ## Some other public methods
 
-The component also exposes the `collapseAllOptions()` method to reset the state of the options when needed (after selecting an option for example):
+The component also exposes a `collapseAllOptions()` method to reset the state of the options when needed (after selecting an option, or when closing the side menu for example):
 
 ```
 @Component({
@@ -180,5 +223,41 @@ export class MyApp {
         
         });
     }
+}
+```
+
+## Navigation outside the side menu
+
+If you set the `showSelectedOption` setting to `true`, and try to navigate to a given page using a button on the content on the page **instead of clicking on that option from the side menu**, that page won't we shown as selected in the menu. In order to avoid this, the component also exposes and event an its payload:
+
+```
+// SideMenuRedirectEvent constant
+export const SideMenuRedirectEvent: string = 'sidemenu:redirect';
+
+// SideMenuRedirectEventData interface
+export interface SideMenuRedirectEventData {
+	displayName?: string;
+}
+```
+
+```
+
+import { SideMenuRedirectEvent, SideMenuRedirectEventData } from './../../shared/side-menu-content/side-menu-content.component';
+
+// ...
+
+public goToSubOption(): void {
+    // Since we're redirecting to a page without clicking the option from the
+    // side menu, we need to use events to tell the side menu component
+    // which option should be marked as selected.
+    let redirectData: SideMenuRedirectEventData = {
+        displayName: 'Sub Option 2'
+    };
+
+    // Send the event to the side menu component
+    this.eventCtrl.publish(SideMenuRedirectEvent, redirectData);
+
+    // Now we can set that page as root
+    this.navCtrl.setRoot(DetailsPage, { title: 'Sub Option 2' });
 }
 ```
