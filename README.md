@@ -35,7 +35,7 @@ If you want to take a look at this demo using Ionic View, use this code: **d90d8
 
 ## Online demo
 
-You can also take a look at the demo online in the following *Stackblitz* project:
+You can also take a look at the demo online in the following **Stackblitz** project:
 
 **https://multi-level-side-menu.stackblitz.io**
 
@@ -190,6 +190,8 @@ And in the view:
 <side-menu-content [settings]="sideMenuSettings" [options]="options" (selectOption)="selectOption($event)"></side-menu-content>
 ```
 
+<br/>
+
 Param | Description | Default
 --- | --- | ---
 `accordionMode` | Collapses any opened option when a new option is expanded. | `false`
@@ -240,8 +242,9 @@ export interface SideMenuRedirectEventData {
 }
 ```
 
-```
+So in you page, you just need to publish that event using [Ionic Events](https://ionicframework.com/docs/api/util/Events/):
 
+```
 import { SideMenuRedirectEvent, SideMenuRedirectEventData } from './../../shared/side-menu-content/side-menu-content.component';
 
 // ...
@@ -261,3 +264,17 @@ public goToSubOption(): void {
     this.navCtrl.setRoot(DetailsPage, { title: 'Sub Option 2' });
 }
 ```
+
+<br><br>
+## Roadmap
+
+1) Convert this demo into a *npm package*
+2) Add unit testing
+3) Add e2e testing
+
+## Contribution
+- Having an **issue** or looking for **support**? [Open an issue](https://github.com/sebaferreras/Ionic3-MultiLevelSideMenu/issues/new) and I'll do my best to help you out.
+- Got a **new feature or a bug fix**? Fork the repo, make your changes, and submit a pull request.
+
+## Support this project
+If you find this project useful, please star the repo to let people know that it's reliable. Also, share it with friends and colleagues that might find this useful as well. Thank you! :)

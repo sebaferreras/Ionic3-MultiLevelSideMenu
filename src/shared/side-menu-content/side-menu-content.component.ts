@@ -112,13 +112,17 @@ export class SideMenuContentComponent {
 	@Output() selectOption = new EventEmitter<any>();
 
 	constructor(private platform: Platform,
-		private renderer: Renderer2,
-		private domCtrl: DomController,
-		private eventsCtrl: Events,
-		private cdRef: ChangeDetectorRef) {
+				private renderer: Renderer2,
+				private domCtrl: DomController,
+				private eventsCtrl: Events,
+				private cdRef: ChangeDetectorRef) {
 		this.eventsCtrl.subscribe(SideMenuRedirectEvent, (data: SideMenuRedirectEventData) => {
 			this.updateSelectedOption(data);
 		});
+	}
+
+	ngOnDestroy() {
+		this.eventsCtrl.unsubscribe(SideMenuRedirectEvent);
 	}
 
 	// ---------------------------------------------------
