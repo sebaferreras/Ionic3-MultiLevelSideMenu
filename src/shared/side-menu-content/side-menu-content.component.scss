@@ -71,4 +71,14 @@ ion-list.accordion-menu {
         overflow-y: hidden;
         height: 0;
     }
+
+    // Sub options without icons
+    ion-item.item.item-block.item-ios.no-icon .item-inner {
+        margin-left: 48px;
+    }
+    
+    ion-item.item.item-block.item-md.no-icon .item-inner,
+    ion-item.item.item-block.item-wp.no-icon .item-inner {
+        margin-left: 40px;
+    }
 }

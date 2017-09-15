@@ -29,13 +29,9 @@ Local packages:
 
 ```
 
-## Ionic View
-
-If you want to take a look at this demo using Ionic View, use this code: **d90d8463**
-
 ## Online demo
 
-You can also take a look at the demo online in the following **Stackblitz** project:
+You can take a look at the demo online in the following **Stackblitz** project:
 
 **https://multi-level-side-menu.stackblitz.io**
 
@@ -159,6 +155,13 @@ export interface SideMenuSettings {
     arrowIcon?: string;
     showSelectedOption?: boolean;
     selectedOptionClass?: string;
+
+    indentSubOptionsWithoutIcons?: boolean;
+    subOptionIndentation?: {
+        ios?: string,
+        md?: string,
+        wp?: string
+    };
 }
 ```
 
@@ -197,8 +200,10 @@ Param | Description | Default
 `accordionMode` | Collapses any opened option when a new option is expanded. | `false`
 `itemHeight` | The height of the items is used to animate the side menu changes when hidding and showing the sub menu items. You can set a custom height for the items for each mode. | `50` for all `md`, `ios` and `wp`
 `arrowIcon` | The Ionic icon name to be used as the arrow in the header options | `ios-arrow-down`
-`showSelectedOption` | If the selected option should be highlighted (if it is a sub item, its parent will also be highlighted) | `false`
+`showSelectedOption` | If the selected option should be highlighted (if it is a sub item, its parent will also be highlighted). If set to `true` and the selected option is a sub item, its parent will be always shown expanded when opening the side menu | `false`
 `selectedOptionClass` | Name of the class to be added to the selected option. Only used when `showSelectedOption` is `true` | `selected-option` 
+`indentSubOptionsWithoutIcons` | Vertically aligns the sub options without icons to the parent option | `false`
+`subOptionIndentation`| The `padding-left` of the sub options, so you can indent them if needed | `'16px'` for all `md`, `ios` and `wp`
 
 
 ## Some other public methods
@@ -265,12 +270,17 @@ public goToSubOption(): void {
 }
 ```
 
-<br><br>
+## Changelog
+
+**30/08/2017**: Added `showSelectedOption` and `selectedOptionClass` to highlight the currently selected option. Added `custom` subproperty in the `MenuOptionModel` model to allow the user to add any custom property on the items.<br>
+
+**16/09/2017**: Added `indentSubOptionsWithoutIcons` and `subOptionIndentation` settings to allow the user to customize the indentation of the sub items. Improved inner logic so now if the `showSelectedOption` setting is `true` and the currently selected option is a sub item, its parent will be shown expanded when opening the side menu.<br>
+
 ## Roadmap
 
-1) Convert this demo into a *npm package*
-2) Add unit testing
-3) Add e2e testing
+- Convert this demo into a *npm package*
+- Add unit testing
+- Add e2e testing
 
 ## Contribution
 - Having an **issue** or looking for **support**? [Open an issue](https://github.com/sebaferreras/Ionic3-MultiLevelSideMenu/issues/new) and I'll do my best to help you out.

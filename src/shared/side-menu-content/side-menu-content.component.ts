@@ -32,14 +32,24 @@ export interface MenuOptionModel {
 // SideMenuSettings interface
 export interface SideMenuSettings {
 	accordionMode?: boolean;
+	arrowIcon?: string;
+
 	itemHeight?: {
 		ios?: number,
 		md?: number,
 		wp?: number
 	};
-	arrowIcon?: string;
+
 	showSelectedOption?: boolean;
 	selectedOptionClass?: string;
+
+	indentSubOptionsWithoutIcons?: boolean;
+
+	subOptionIndentation?: {
+		ios?: string,
+		md?: string,
+		wp?: string
+	};
 }
 
 // SideMenuRedirectEvent constant
@@ -139,33 +149,54 @@ export class SideMenuContentComponent {
 
 	// Toggle the sub options of the selected item
 	public toggleItemOptions(optionsDivElement: any, arrowIcon: any, itemsCount: number): void {
-		let itemHeight;
-
 		if (this.menuSettings.accordionMode) {
-			this.collapseAllOptionsExceptSelected(optionsDivElement);
-			this.resetAllIconsExceptSelected(arrowIcon);
+			this.collapseAllOptionsExceptToggled(optionsDivElement);
+			this.resetAllIconsExceptToggled(arrowIcon);
 		}
 
-		if (this.platform.is('ios')) {
-			itemHeight = this.menuSettings.itemHeight.ios;
-		} else if (this.platform.is('windows')) {
-			itemHeight = this.menuSettings.itemHeight.wp;
-		} else {
-			itemHeight = this.menuSettings.itemHeight.md;
-		}
-
-		this.toggleOptionSubItems(optionsDivElement, itemHeight + 1, itemsCount);
+		this.toggleOptionSubItems(optionsDivElement, this.itemHeight + 1, itemsCount);
 		this.toggleOptionIcon(arrowIcon);
 	}
 
 	// Reset the entire menu
 	public collapseAllOptions(): void {
 		this.optionDivs.forEach(optionDiv => {
-			this.hideSubItems(optionDiv.nativeElement);
+			this.domCtrl.read(() => {
+				let optionElement = optionDiv.nativeElement;
+				if (!optionElement.classList.contains('parent-of-selected')) {
+					this.hideSubItems(optionDiv.nativeElement);
+				} else {
+					if (!this.subItemsAreExpanded(optionElement)) {
+						let parent = this.parents.get(this.selectedOption.displayName.toLowerCase());
+						this.toggleOptionSubItems(optionElement, this.itemHeight + 1, parent.subItems.length);
+					}
+				}
+			});
 		});
 		this.headerIcons.forEach(headerIcon => {
-			this.resetIcon(headerIcon.nativeElement);
+			this.domCtrl.read(() => {
+				let iconElement = headerIcon.nativeElement;
+				if (!iconElement.classList.contains('parent-of-selected')) {
+					this.resetIcon(headerIcon.nativeElement);
+				} else {
+					if (!this.iconIsRotated(iconElement)) {
+						this.toggleOptionIcon(iconElement);
+					}
+				}
+			});
 		});
+	}
+
+	public get subOptionIndentation(): string {
+		if (this.platform.is('ios')) return this.menuSettings.subOptionIndentation.ios;
+		if (this.platform.is('windows')) return this.menuSettings.subOptionIndentation.wp;
+		return this.menuSettings.subOptionIndentation.md;
+	}
+
+	public get itemHeight(): number {
+		if (this.platform.is('ios')) return this.menuSettings.itemHeight.ios;
+		if (this.platform.is('windows')) return this.menuSettings.itemHeight.wp;
+		return this.menuSettings.itemHeight.md;
 	}
 
 	// ---------------------------------------------------
@@ -257,22 +288,26 @@ export class SideMenuContentComponent {
 	}
 
 	// Reset the arrow icon of all the options except the selected option
-	private resetAllIconsExceptSelected(selectedArrowIcon: any): void {
+	private resetAllIconsExceptToggled(selectedArrowIcon: any): void {
 		this.headerIcons.forEach(headerIcon => {
-			let iconElement = headerIcon.nativeElement;
-			if (iconElement.id !== selectedArrowIcon.id && this.iconIsRotated(iconElement)) {
-				this.resetIcon(iconElement);
-			}
+			this.domCtrl.read(() => {
+				let iconElement = headerIcon.nativeElement;
+				if (iconElement.id !== selectedArrowIcon.id && this.iconIsRotated(iconElement)) {
+					this.resetIcon(iconElement);
+				}
+			});
 		});
 	}
 
 	// Collapse the sub items of all the options except the selected option
-	private collapseAllOptionsExceptSelected(selectedOptionsContainer: any): void {
+	private collapseAllOptionsExceptToggled(selectedOptionsContainer: any): void {
 		this.optionDivs.forEach(optionDiv => {
-			let optionElement = optionDiv.nativeElement;
-			if (optionElement.id !== selectedOptionsContainer.id && this.subItemsAreExpanded(optionElement)) {
-				this.hideSubItems(optionElement);
-			}
+			this.domCtrl.read(() => {
+				let optionElement = optionDiv.nativeElement;
+				if (optionElement.id !== selectedOptionsContainer.id && this.subItemsAreExpanded(optionElement)) {
+					this.hideSubItems(optionElement);
+				}
+			});
 		});
 	}
 
@@ -311,7 +346,13 @@ export class SideMenuContentComponent {
 			},
 			arrowIcon: 'ios-arrow-down',
 			showSelectedOption: false,
-			selectedOptionClass: 'selected-option'
+			selectedOptionClass: 'selected-option',
+			indentSubOptionsWithoutIcons: false,
+			subOptionIndentation: {
+				ios: '16px',
+				md: '16px',
+				wp: '16px'
+			}
 		}
 
 		if (!this.menuSettings) {
@@ -332,6 +373,18 @@ export class SideMenuContentComponent {
 		this.menuSettings.accordionMode = this.isDefined(this.menuSettings.accordionMode) ? this.menuSettings.accordionMode : defaultSettings.accordionMode;
 		this.menuSettings.arrowIcon = this.isDefined(this.menuSettings.arrowIcon) ? this.menuSettings.arrowIcon : defaultSettings.arrowIcon;
 		this.menuSettings.selectedOptionClass = this.isDefined(this.menuSettings.selectedOptionClass) ? this.menuSettings.selectedOptionClass : defaultSettings.selectedOptionClass;
+		this.menuSettings.subOptionIndentation = this.isDefined(this.menuSettings.subOptionIndentation) ? this.menuSettings.subOptionIndentation : defaultSettings.subOptionIndentation;
+
+		this.menuSettings.indentSubOptionsWithoutIcons = this.isDefined(this.menuSettings.indentSubOptionsWithoutIcons) ? this.menuSettings.indentSubOptionsWithoutIcons : defaultSettings.indentSubOptionsWithoutIcons;
+
+
+		if (!this.menuSettings.subOptionIndentation) {
+			this.menuSettings.subOptionIndentation = defaultSettings.subOptionIndentation;
+		} else {
+			this.menuSettings.subOptionIndentation.ios = this.isDefined(this.menuSettings.subOptionIndentation.ios) ? this.menuSettings.subOptionIndentation.ios : defaultSettings.subOptionIndentation.ios;
+			this.menuSettings.subOptionIndentation.md = this.isDefined(this.menuSettings.subOptionIndentation.md) ? this.menuSettings.subOptionIndentation.md : defaultSettings.subOptionIndentation.md;
+			this.menuSettings.subOptionIndentation.wp = this.isDefined(this.menuSettings.subOptionIndentation.wp) ? this.menuSettings.subOptionIndentation.wp : defaultSettings.subOptionIndentation.wp;
+		}
 	}
 
 	private isDefined(property: any): boolean {

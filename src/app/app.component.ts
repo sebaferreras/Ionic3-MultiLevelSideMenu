@@ -34,7 +34,12 @@ export class MyApp {
 	public sideMenuSettings: SideMenuSettings = {
 		accordionMode: true,
 		showSelectedOption: true,
-		selectedOptionClass: 'my-selected-option'
+		selectedOptionClass: 'my-selected-option',
+		subOptionIndentation: {
+			md: '56px',
+			ios: '64px',
+			wp: '56px'
+		}
 	};
 
 	constructor(private platform: Platform,
