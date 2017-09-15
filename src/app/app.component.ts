@@ -162,9 +162,6 @@ export class MyApp {
 	public selectOption(option: MenuOptionModel): void {
 		this.menuCtrl.close().then(() => {
 
-			// Collapse all the options
-			this.sideMenu.collapseAllOptions();
-
 			if (option.custom && option.custom.isLogin) {
 				this.presentAlert('You\'ve clicked the login option!');
 			} else if (option.custom && option.custom.isLogout) {
