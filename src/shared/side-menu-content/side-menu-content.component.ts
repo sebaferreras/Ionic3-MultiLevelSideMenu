@@ -1,7 +1,7 @@
 // Angular
 import { Component, Input, Output, Renderer2, EventEmitter, ChangeDetectionStrategy, ViewChildren, QueryList, NgZone, ChangeDetectorRef } from '@angular/core'; // tslint:disable-line
 
-// Ionoc
+// Ionic
 import { Platform, DomController, Events } from 'ionic-angular';
 
 // MenuOptionModel interface
