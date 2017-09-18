@@ -62,7 +62,7 @@ export interface MenuOptionModel {
     component?: any;
 
     // Here you can pass whatever you need. That way you can 
-    // handle login/logout options, changing the language, and son on...
+    // handle login/logout options, changing the language, and so on...
     custom?: any;
 
     // Set if this option is selected by default
@@ -165,7 +165,7 @@ export interface SideMenuSettings {
 }
 ```
 
-The settings should be send to the component using the `settings` property
+The settings should be send to the component using the `settings` property:
 
 ```
 @Component({
@@ -235,7 +235,7 @@ export class MyApp {
 
 ## Navigation outside the side menu
 
-If you set the `showSelectedOption` setting to `true`, and try to navigate to a given page using a button on the content on the page **instead of clicking on that option from the side menu**, that page won't we shown as selected in the menu. In order to avoid this, the component also exposes and event an its payload:
+If you set the `showSelectedOption` setting to `true`, and try to navigate to a given page using a button on the content on the page **instead of clicking on that option from the side menu**, that page won't be shown as selected in the menu. In order to avoid this, the component also exposes an event and its payload:
 
 ```
 // SideMenuRedirectEvent constant
@@ -247,7 +247,7 @@ export interface SideMenuRedirectEventData {
 }
 ```
 
-So in you page, you just need to publish that event using [Ionic Events](https://ionicframework.com/docs/api/util/Events/):
+So in your page, you just need to publish that event using [Ionic Events](https://ionicframework.com/docs/api/util/Events/):
 
 ```
 import { SideMenuRedirectEvent, SideMenuRedirectEventData } from './../../shared/side-menu-content/side-menu-content.component';
@@ -278,7 +278,7 @@ public goToSubOption(): void {
 
 ## Roadmap
 
-- Convert this demo into a *npm package*
+- Convert this demo into an *npm package*
 - Add unit testing
 - Add e2e testing
 
