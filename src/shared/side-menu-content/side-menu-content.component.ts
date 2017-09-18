@@ -128,6 +128,7 @@ export class SideMenuContentComponent {
 				private cdRef: ChangeDetectorRef) {
 		this.eventsCtrl.subscribe(SideMenuRedirectEvent, (data: SideMenuRedirectEventData) => {
 			this.updateSelectedOption(data);
+			this.collapseAllOptions();
 		});
 	}
 
