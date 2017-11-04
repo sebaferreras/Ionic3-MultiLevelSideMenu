@@ -74,7 +74,6 @@ export class SideMenuContentComponent {
 
 	// Private properties
 	private selectedOption: InnerMenuOptionModel;
-	private parents: Map<string, MenuOptionModel> = new Map<string, MenuOptionModel>();
 
 	public collapsableItems: Array<InnerMenuOptionModel> = [];
 
