@@ -70,7 +70,10 @@ export class MyApp {
 		this.options.push({
 			iconName: 'home',
 			displayName: 'Home',
-			component: HomePage,			
+			component: HomePage,
+
+			// This option is already selected
+			selected: true
 		});
 
 		this.options.push({
@@ -93,10 +96,7 @@ export class MyApp {
 				{
 					iconName: 'basket',
 					displayName: 'Sub Option 1',
-					component: DetailsPage,
-					
-					// This option is already selected
-					selected: true
+					component: DetailsPage
 				},
 				{
 					iconName: 'bookmark',
@@ -163,7 +163,6 @@ export class MyApp {
 
 	public selectOption(option: MenuOptionModel): void {
 		this.menuCtrl.close().then(() => {
-
 			if (option.custom && option.custom.isLogin) {
 				this.presentAlert('You\'ve clicked the login option!');
 			} else if (option.custom && option.custom.isLogout) {
@@ -177,9 +176,8 @@ export class MyApp {
 			}
 		});
 	}
-
+	
 	public collapseMenuOptions(): void {
-		// Collapse all the options
 		this.sideMenu.collapseAllOptions();
 	}
 
