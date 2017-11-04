@@ -233,6 +233,68 @@ export class MyApp {
 }
 ```
 
+## Theming
+
+You can use some simple css rules to change the styles of the menu items. If you set the `showSelectedOption` setting to `true`, you can also set the styles of the items when they are marked as selected.
+
+Target | Class name
+--- | ---
+Single option (items without sub-options) | `option` 
+Header option | `header` 
+Sub option | `sub-option` 
+
+So for instance, you can use the following css rules (by adding it in the `app.scss` file) to change the color of the menu items, both when they are selected and when they're not:
+
+```
+side-menu-content {
+
+    // In this example, we have used the following name
+    // for the selected option in the settings object:
+    // selectedOptionClass: 'active-side-menu-option'
+
+    $active-color: map-get($colors, primary);
+    $font-color: #222;
+    $background-light-color: #fff;
+    $background-dark-color: #eee;
+
+    // Single option
+    // ------------------
+    ion-item.item.item-block.option {
+        background-color: $background-light-color;
+        color: $font-color;
+
+        &.active-side-menu-option {
+            color: $active-color;
+            font-weight: 700;
+        }
+    }
+
+    // Header
+    // ------------------
+    ion-item.item.item-block.header {
+        background-color: $background-dark-color;
+        color: $font-color;
+
+        &.active-side-menu-option {
+            color: $active-color;
+            font-weight: 700;
+        }
+    }
+
+    // Sub option
+    // ------------------
+    ion-item.item.item-block.sub-option {
+        background-color: $background-light-color;
+        color: $font-color;
+
+        &.active-side-menu-option {
+            color: $active-color;
+            font-weight: 700;            
+        }
+    }
+}
+```
+
 ## Navigation outside the side menu
 
 If you set the `showSelectedOption` setting to `true`, and try to navigate to a given page using a button on the content on the page **instead of clicking on that option from the side menu**, that page won't be shown as selected in the menu. In order to avoid this, the component also exposes an event and its payload:
@@ -271,6 +333,8 @@ public goToSubOption(): void {
 ```
 
 ## Changelog
+
+**04/11/2017**: Added `option`, `header` and `sub-option` classes to style the options (see `Theming` section for more details). Improved overall performance by removing direct access to the DOM.<br>
 
 **30/08/2017**: Added `showSelectedOption` and `selectedOptionClass` to highlight the currently selected option. Added `custom` subproperty in the `MenuOptionModel` model to allow the user to add any custom property on the items.<br>
 

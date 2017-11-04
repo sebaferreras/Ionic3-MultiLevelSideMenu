@@ -1,63 +1,64 @@
 // Angular
-import { Component, Input, Output, Renderer2, EventEmitter, ChangeDetectionStrategy, ViewChildren, QueryList, NgZone, ChangeDetectorRef } from '@angular/core'; // tslint:disable-line
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core'; // tslint:disable-line
 
 // Ionic
-import { Platform, DomController, Events } from 'ionic-angular';
+import { Platform, Events } from 'ionic-angular';
 
-// MenuOptionModel interface
-export interface MenuOptionModel {
+// Models
+import { SideMenuSettings } from './models/side-menu-settings';
+import { MenuOptionModel } from './models/menu-option-model';
+import { SideMenuRedirectEvent, SideMenuRedirectEventData } from './models/side-menu-redirect-events';
 
-	// If the option has sub items and the iconName is null,
-	// the default icon will be 'ios-arrow-down'.
-	iconName?: string;
-
-	// The name to display in the menu
+class InnerMenuOptionModel {
+	id: number;
+	iconName: string;
 	displayName: string;
 
-	// Target component (or null if it's a "special option" like login/logout)
-	component?: any;
+	targetOption: MenuOptionModel;
 
-	// Here you can pass whatever you need, and will be returned if this
-	// option is selected. That way you can handle login/logout options,
-	// changing the language, and son on...
-	custom?: any;
+	parent: InnerMenuOptionModel;
 
-	// Set if this option is selected by default
-	selected?: boolean;
+	selected: boolean;
 
-	// List of sub items if any
-	subItems?: Array<MenuOptionModel>;
-}
+	expanded: boolean;
+	subItemsCount: number;
+	subOptions: Array<InnerMenuOptionModel>;
 
-// SideMenuSettings interface
-export interface SideMenuSettings {
-	accordionMode?: boolean;
-	arrowIcon?: string;
+	private static counter = 1;
+	public static fromMenuOptionModel(option: MenuOptionModel, parent?: InnerMenuOptionModel): InnerMenuOptionModel {
 
-	itemHeight?: {
-		ios?: number,
-		md?: number,
-		wp?: number
-	};
+		let innerMenuOptionModel = new InnerMenuOptionModel();
 
-	showSelectedOption?: boolean;
-	selectedOptionClass?: string;
+		innerMenuOptionModel.id = this.counter++;
+		innerMenuOptionModel.iconName = option.iconName;
+		innerMenuOptionModel.displayName = option.displayName;
+		innerMenuOptionModel.targetOption = option;
+		innerMenuOptionModel.parent = parent || null;
 
-	indentSubOptionsWithoutIcons?: boolean;
+		innerMenuOptionModel.selected = option.selected;
 
-	subOptionIndentation?: {
-		ios?: string,
-		md?: string,
-		wp?: string
-	};
-}
+		if (option.subItems) {
+			innerMenuOptionModel.expanded = false;
+			innerMenuOptionModel.subItemsCount = option.subItems.length;
+			innerMenuOptionModel.subOptions = [];
 
-// SideMenuRedirectEvent constant
-export const SideMenuRedirectEvent: string = 'sidemenu:redirect';
+			option.subItems.forEach(subItem => {
 
-// SideMenuRedirectEventData interface
-export interface SideMenuRedirectEventData {
-	displayName?: string;
+				let innerSubItem = InnerMenuOptionModel.fromMenuOptionModel(subItem, innerMenuOptionModel);
+				innerMenuOptionModel.subOptions.push(innerSubItem);
+
+				// Select the parent if any 
+				// child option is selected
+				if (subItem.selected) {
+					innerSubItem.parent.selected = true;
+					innerSubItem.parent.expanded = true;
+				}
+
+			});
+		}
+
+		return innerMenuOptionModel;
+	}
 }
 
 @Component({
@@ -67,35 +68,39 @@ export interface SideMenuRedirectEventData {
 })
 export class SideMenuContentComponent {
 
-	@ViewChildren('options') optionDivs: QueryList<any>;
-	@ViewChildren('headerIcon') headerIcons: QueryList<any>;
-
 	// Main inputs
 	public menuSettings: SideMenuSettings;
 	public menuOptions: Array<MenuOptionModel>;
 
 	// Private properties
-	private selectedOption: MenuOptionModel;
-	private parents: Map<string, MenuOptionModel>;
+	private selectedOption: InnerMenuOptionModel;
+
+	public collapsableItems: Array<InnerMenuOptionModel> = [];
 
 	@Input('options')
 	set options(value: Array<MenuOptionModel>) {
 		if (value) {
+
+			// Keep a reference to the options 
+			// sent to this component
 			this.menuOptions = value;
 
-			if (!this.menuSettings || this.menuSettings.showSelectedOption) {
-				this.selectedOption = this.menuOptions.find(option => option.selected);
+			// Map the options to our internal models
+			this.menuOptions.forEach(option => {
+				let innerMenuOption = InnerMenuOptionModel.fromMenuOptionModel(option);
+				this.collapsableItems.push(innerMenuOption);
 
-				this.parents = new Map<string, MenuOptionModel>();
-
-				this.menuOptions.forEach(option => {
-					if (option.subItems) {
-						option.subItems.forEach(subItem => {
-							this.parents.set(subItem.displayName.toLowerCase(), option);
-						});
-					}
-				});
-			}
+				// Check if there's any option marked as selected
+				if (option.selected) {
+					this.selectedOption = innerMenuOption;
+				} else if (innerMenuOption.subItemsCount) {
+					innerMenuOption.subOptions.forEach(subItem => {
+						if (subItem.selected) {
+							this.selectedOption = subItem;
+						}
+					});
+				}
+			});
 		}
 	}
 
@@ -104,17 +109,6 @@ export class SideMenuContentComponent {
 		if (value) {
 			this.menuSettings = value;
 			this.mergeSettings();
-
-			if (!this.menuSettings.showSelectedOption && this.selectedOption) {
-				let parent = this.parents.get(this.selectedOption.displayName.toLowerCase());
-
-				// Unselect the parent and the child
-				parent.selected = false;
-				this.selectedOption.selected = false;
-
-				// Reset the reference to the selected option
-				this.selectedOption = null;
-			}
 		}
 	}
 
@@ -122,13 +116,12 @@ export class SideMenuContentComponent {
 	@Output() selectOption = new EventEmitter<any>();
 
 	constructor(private platform: Platform,
-				private renderer: Renderer2,
-				private domCtrl: DomController,
 				private eventsCtrl: Events,
 				private cdRef: ChangeDetectorRef) {
+
+		// Handle the redirect event
 		this.eventsCtrl.subscribe(SideMenuRedirectEvent, (data: SideMenuRedirectEventData) => {
 			this.updateSelectedOption(data);
-			this.collapseAllOptions();
 		});
 	}
 
@@ -141,59 +134,65 @@ export class SideMenuContentComponent {
 	// ---------------------------------------------------
 
 	// Send the selected option to the caller component
-	public select(option: MenuOptionModel): void {
+	public select(option: InnerMenuOptionModel): void {
 		if (this.menuSettings.showSelectedOption) {
 			this.setSelectedOption(option);
 		}
-		this.selectOption.emit(option);
+
+		// Return the selected option (not our inner option)
+		this.selectOption.emit(option.targetOption);
 	}
 
 	// Toggle the sub options of the selected item
-	public toggleItemOptions(optionsDivElement: any, arrowIcon: any, itemsCount: number): void {
+	public toggleItemOptions(targetOption: InnerMenuOptionModel): void {
+
+		if(!targetOption) return;
+
+		// If the accordion mode is set to true, we need
+		// to collapse all the other menu options
 		if (this.menuSettings.accordionMode) {
-			this.collapseAllOptionsExceptToggled(optionsDivElement);
-			this.resetAllIconsExceptToggled(arrowIcon);
+			this.collapsableItems.forEach(option => {
+				if (option.id !== targetOption.id) {
+					option.expanded = false;
+				}
+			});
 		}
 
-		this.toggleOptionSubItems(optionsDivElement, this.itemHeight + 1, itemsCount);
-		this.toggleOptionIcon(arrowIcon);
+		// Toggle the selected option
+		targetOption.expanded = !targetOption.expanded;
 	}
 
 	// Reset the entire menu
 	public collapseAllOptions(): void {
-		this.optionDivs.forEach(optionDiv => {
-			this.domCtrl.read(() => {
-				let optionElement = optionDiv.nativeElement;
-				if (!optionElement.classList.contains('parent-of-selected')) {
-					this.hideSubItems(optionDiv.nativeElement);
-				} else {
-					if (!this.subItemsAreExpanded(optionElement)) {
-						let parent = this.parents.get(this.selectedOption.displayName.toLowerCase());
-						this.toggleOptionSubItems(optionElement, this.itemHeight + 1, parent.subItems.length);
+		this.collapsableItems.forEach(option => {
+			if (!option.selected) {
+				option.expanded = false;
+			}
+
+			if (option.subItemsCount) {
+				option.subOptions.forEach(subItem => {
+					if (subItem.selected) {
+						// Expand the parent if any of 
+						// its childs is selected
+						subItem.parent.expanded = true;
 					}
-				}
-			});
+				});
+			}
 		});
-		this.headerIcons.forEach(headerIcon => {
-			this.domCtrl.read(() => {
-				let iconElement = headerIcon.nativeElement;
-				if (!iconElement.classList.contains('parent-of-selected')) {
-					this.resetIcon(headerIcon.nativeElement);
-				} else {
-					if (!this.iconIsRotated(iconElement)) {
-						this.toggleOptionIcon(iconElement);
-					}
-				}
-			});
-		});
+
+		// Update the view since there wasn't
+		// any user interaction with it
+		this.cdRef.detectChanges();
 	}
 
+	// Get the proper indentation of each option
 	public get subOptionIndentation(): string {
 		if (this.platform.is('ios')) return this.menuSettings.subOptionIndentation.ios;
 		if (this.platform.is('windows')) return this.menuSettings.subOptionIndentation.wp;
 		return this.menuSettings.subOptionIndentation.md;
 	}
 
+	// Get the proper height of each option
 	public get itemHeight(): number {
 		if (this.platform.is('ios')) return this.menuSettings.itemHeight.ios;
 		if (this.platform.is('windows')) return this.menuSettings.itemHeight.wp;
@@ -204,40 +203,38 @@ export class SideMenuContentComponent {
 	// PRIVATE methods
 	// ---------------------------------------------------
 
-	// Method that resets the selected option and its parent
-	private resetSelectedOption() {
-		if (!this.selectedOption) return;
-
-		this.resetSelectedOptionParent();
-		this.selectedOption.selected = false;
-		this.selectedOption = null;
-	}
-
-	// Method that resets the parent of the current selected option
-	private resetSelectedOptionParent() {
-		let parent = this.parents.get(this.selectedOption.displayName.toLowerCase());
-		if (parent) {
-			parent.selected = false;
-		}
-	}
-
 	// Method that set the selected option and its parent
-	private setSelectedOption(option: MenuOptionModel) {
-		if (!option.component) return;
+	private setSelectedOption(option: InnerMenuOptionModel) {
+		if (!option.targetOption.component) return;
 
-		this.resetSelectedOption();
+		// Clean the current selected option if any
+		if (this.selectedOption) {
+			this.selectedOption.selected = false;
+			this.selectedOption.targetOption.selected = false;
 
-		this.setOptionParentAsSelected(option);
-		option.selected = true;
-		this.selectedOption = option;
-	}
+			if (this.selectedOption.parent) {
+				this.selectedOption.parent.selected = false;
+				this.selectedOption.parent.expanded = false;
+			}
 
-	// Method that sets as selected the parent of the given option
-	private setOptionParentAsSelected(option: MenuOptionModel) {
-		let parent = this.parents.get(option.displayName.toLowerCase());
-		if (parent) {
-			parent.selected = true;
+			this.selectedOption = null;
 		}
+
+		// Set this option to be the selected
+		option.selected = true;
+		option.targetOption.selected = true;
+
+		if (option.parent) {
+			option.parent.selected = true;
+			option.parent.expanded = true;
+		}
+
+		// Keep a reference to the selected option
+		this.selectedOption = option;
+
+		// Update the view if needed since we may have
+		// expanded or collapsed some options
+		this.cdRef.detectChanges();
 	}
 
 	// Update the selected option
@@ -249,91 +246,21 @@ export class SideMenuContentComponent {
 
 		let targetOption;
 
-		this.menuOptions.forEach(option => {
+		this.collapsableItems.forEach(option => {
 			if (option.displayName.toLowerCase() === data.displayName.toLowerCase()) {
 				targetOption = option;
-			} else {
-				if (option.subItems) {
-					option.subItems.forEach(subItem => {
-						if (subItem.displayName.toLowerCase() === data.displayName.toLowerCase()) {
-							targetOption = subItem;
-						}
-					});
-				}
+			} else if (option.subItemsCount) {
+				option.subOptions.forEach(subOption => {
+					if (subOption.displayName.toLowerCase() === data.displayName.toLowerCase()) {
+						targetOption = subOption;
+					}
+				});
 			}
 		});
 
 		if (targetOption) {
-			this.resetSelectedOption();
 			this.setSelectedOption(targetOption);
-			this.cdRef.detectChanges();
 		}
-	}
-
-	// Toggle the sub items of the selected option
-	private toggleOptionSubItems(optionsContainer: any, elementHeight: number, itemsCount: number): void {
-		this.domCtrl.write(() => {
-			this.subItemsAreExpanded(optionsContainer)
-				? this.renderer.setStyle(optionsContainer, 'height', '0px')
-				: this.renderer.setStyle(optionsContainer, 'height', `${(elementHeight * itemsCount)}px`);
-		});
-	}
-
-	// Toggle the arrow icon of the selected option
-	private toggleOptionIcon(arrowIcon: any): void {
-		this.domCtrl.write(() => {
-			this.iconIsRotated(arrowIcon)
-				? this.renderer.removeClass(arrowIcon, 'rotate')
-				: this.renderer.addClass(arrowIcon, 'rotate');
-		});
-	}
-
-	// Reset the arrow icon of all the options except the selected option
-	private resetAllIconsExceptToggled(selectedArrowIcon: any): void {
-		this.headerIcons.forEach(headerIcon => {
-			this.domCtrl.read(() => {
-				let iconElement = headerIcon.nativeElement;
-				if (iconElement.id !== selectedArrowIcon.id && this.iconIsRotated(iconElement)) {
-					this.resetIcon(iconElement);
-				}
-			});
-		});
-	}
-
-	// Collapse the sub items of all the options except the selected option
-	private collapseAllOptionsExceptToggled(selectedOptionsContainer: any): void {
-		this.optionDivs.forEach(optionDiv => {
-			this.domCtrl.read(() => {
-				let optionElement = optionDiv.nativeElement;
-				if (optionElement.id !== selectedOptionsContainer.id && this.subItemsAreExpanded(optionElement)) {
-					this.hideSubItems(optionElement);
-				}
-			});
-		});
-	}
-
-	// Return true if sub items are expanded
-	private subItemsAreExpanded(element: any): boolean {
-		return element.style.height !== '' && element.style.height !== '0px';
-	}
-
-	// Return true if the icon is rotated
-	private iconIsRotated(element: any): boolean {
-		return element.classList.contains('rotate');
-	}
-
-	// Collapse the sub items of the selected option
-	private hideSubItems(optionsContainer: any): void {
-		this.domCtrl.write(() => {
-			this.renderer.setStyle(optionsContainer, 'height', '0px');
-		});
-	}
-
-	// Reset the arrow icon of the selected option
-	private resetIcon(arrowIcon: any): void {
-		this.domCtrl.write(() => {
-			this.renderer.removeClass(arrowIcon, 'rotate');
-		});
 	}
 
 	// Merge the settings received with the default settings
