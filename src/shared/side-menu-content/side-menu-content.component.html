@@ -3,7 +3,7 @@
 
         <!-- It is a simple option -->
         <ng-template [ngIf]="!option.subItemsCount">
-            <ion-item [ngClass]="menuSettings?.showSelectedOption && option.selected ? menuSettings.selectedOptionClass : null" (tap)="select(option)" tappable>
+            <ion-item class="option" [ngClass]="menuSettings?.showSelectedOption && option.selected ? menuSettings.selectedOptionClass : null" (tap)="select(option)" tappable>
                 <ion-icon *ngIf="option.iconName" [name]="option.iconName" item-left></ion-icon>
                 {{ option.displayName }}
             </ion-item>
@@ -23,7 +23,7 @@
                 <!-- Sub items -->
                 <div [style.height]="option.expanded ? ((itemHeight + 1) * option.subItemsCount) + 'px' : '0px'" class="options">
                     <ng-template ngFor let-item [ngForOf]="option.subOptions">
-                        <ion-item [style.padding-left]="subOptionIndentation" [class.no-icon]="menuSettings?.indentSubOptionsWithoutIcons && !item.iconName" [ngClass]="menuSettings?.showSelectedOption && item.selected ? menuSettings.selectedOptionClass : null" tappable (tap)="select(item)">
+                        <ion-item class="sub-option" [style.padding-left]="subOptionIndentation" [class.no-icon]="menuSettings?.indentSubOptionsWithoutIcons && !item.iconName" [ngClass]="menuSettings?.showSelectedOption && item.selected ? menuSettings.selectedOptionClass : null" tappable (tap)="select(item)">
                             <ion-icon *ngIf="item.iconName" [name]="item.iconName" item-left></ion-icon>
                             {{ item.displayName }}
                         </ion-item>

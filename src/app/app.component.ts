@@ -36,7 +36,7 @@ export class MyApp {
 	public sideMenuSettings: SideMenuSettings = {
 		accordionMode: true,
 		showSelectedOption: true,
-		selectedOptionClass: 'my-selected-option',
+		selectedOptionClass: 'active-side-menu-option',
 		subOptionIndentation: {
 			md: '56px',
 			ios: '64px',
