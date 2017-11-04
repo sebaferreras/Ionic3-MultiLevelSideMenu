@@ -4,61 +4,10 @@ import { Component, Input, Output, Renderer2, EventEmitter, ChangeDetectionStrat
 // Ionic
 import { Platform, DomController, Events } from 'ionic-angular';
 
-// MenuOptionModel interface
-export interface MenuOptionModel {
-
-	// If the option has sub items and the iconName is null,
-	// the default icon will be 'ios-arrow-down'.
-	iconName?: string;
-
-	// The name to display in the menu
-	displayName: string;
-
-	// Target component (or null if it's a "special option" like login/logout)
-	component?: any;
-
-	// Here you can pass whatever you need, and will be returned if this
-	// option is selected. That way you can handle login/logout options,
-	// changing the language, and son on...
-	custom?: any;
-
-	// Set if this option is selected by default
-	selected?: boolean;
-
-	// List of sub items if any
-	subItems?: Array<MenuOptionModel>;
-}
-
-// SideMenuSettings interface
-export interface SideMenuSettings {
-	accordionMode?: boolean;
-	arrowIcon?: string;
-
-	itemHeight?: {
-		ios?: number,
-		md?: number,
-		wp?: number
-	};
-
-	showSelectedOption?: boolean;
-	selectedOptionClass?: string;
-
-	indentSubOptionsWithoutIcons?: boolean;
-
-	subOptionIndentation?: {
-		ios?: string,
-		md?: string,
-		wp?: string
-	};
-}
-
-// SideMenuRedirectEvent constant
-export const SideMenuRedirectEvent: string = 'sidemenu:redirect';
-
-// SideMenuRedirectEventData interface
-export interface SideMenuRedirectEventData {
-	displayName?: string;
-}
+// Models
+import { SideMenuSettings } from './models/side-menu-settings';
+import { MenuOptionModel } from './models/menu-option-model';
+import { SideMenuRedirectEvent, SideMenuRedirectEventData } from './models/side-menu-redirect-events';
 
 @Component({
 	selector: 'side-menu-content',
@@ -76,7 +25,7 @@ export class SideMenuContentComponent {
 
 	// Private properties
 	private selectedOption: MenuOptionModel;
-	private parents: Map<string, MenuOptionModel>;
+	private parents: Map<string, MenuOptionModel> = new Map<string, MenuOptionModel>();
 
 	@Input('options')
 	set options(value: Array<MenuOptionModel>) {
@@ -85,8 +34,6 @@ export class SideMenuContentComponent {
 
 			if (!this.menuSettings || this.menuSettings.showSelectedOption) {
 				this.selectedOption = this.menuOptions.find(option => option.selected);
-
-				this.parents = new Map<string, MenuOptionModel>();
 
 				this.menuOptions.forEach(option => {
 					if (option.subItems) {
@@ -122,10 +69,10 @@ export class SideMenuContentComponent {
 	@Output() selectOption = new EventEmitter<any>();
 
 	constructor(private platform: Platform,
-				private renderer: Renderer2,
-				private domCtrl: DomController,
-				private eventsCtrl: Events,
-				private cdRef: ChangeDetectorRef) {
+		private renderer: Renderer2,
+		private domCtrl: DomController,
+		private eventsCtrl: Events,
+		private cdRef: ChangeDetectorRef) {
 		this.eventsCtrl.subscribe(SideMenuRedirectEvent, (data: SideMenuRedirectEventData) => {
 			this.updateSelectedOption(data);
 			this.collapseAllOptions();
