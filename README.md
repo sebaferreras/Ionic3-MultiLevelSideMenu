@@ -334,6 +334,8 @@ public goToSubOption(): void {
 
 ## Changelog
 
+**04/11/2017**: Added `option`, `header` and `sub-option` classes to style the options (see `Theming` section for more details). Improved overall performance by removing direct access to the DOM.<br>
+
 **30/08/2017**: Added `showSelectedOption` and `selectedOptionClass` to highlight the currently selected option. Added `custom` subproperty in the `MenuOptionModel` model to allow the user to add any custom property on the items.<br>
 
 **16/09/2017**: Added `indentSubOptionsWithoutIcons` and `subOptionIndentation` settings to allow the user to customize the indentation of the sub items. Improved inner logic so now if the `showSelectedOption` setting is `true` and the currently selected option is a sub item, its parent will be shown expanded when opening the side menu.<br>
