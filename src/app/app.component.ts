@@ -70,10 +70,7 @@ export class MyApp {
 		this.options.push({
 			iconName: 'home',
 			displayName: 'Home',
-			component: HomePage,
-
-			// This option is already selected
-			selected: true
+			component: HomePage,			
 		});
 
 		this.options.push({
@@ -96,7 +93,10 @@ export class MyApp {
 				{
 					iconName: 'basket',
 					displayName: 'Sub Option 1',
-					component: DetailsPage
+					component: DetailsPage,
+					
+					// This option is already selected
+					selected: true
 				},
 				{
 					iconName: 'bookmark',

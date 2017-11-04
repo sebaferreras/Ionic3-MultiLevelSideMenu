@@ -33,13 +33,29 @@ export class SideMenuContentComponent {
 			this.menuOptions = value;
 
 			if (!this.menuSettings || this.menuSettings.showSelectedOption) {
-				this.selectedOption = this.menuOptions.find(option => option.selected);
 
 				this.menuOptions.forEach(option => {
 					if (option.subItems) {
 						option.subItems.forEach(subItem => {
 							this.parents.set(subItem.displayName.toLowerCase(), option);
+
+							if(subItem.selected) {
+								this.selectedOption = subItem;
+								
+								// Select the parent as well
+								option.selected = true;
+
+								// We need a timeout in order to update the
+								// view after it's rendered since this line is
+								// executed when the inputs are set, and thus
+								// the view is not yet ready
+								setTimeout(() => { this.collapseAllOptions() }, 0);
+							}
 						});
+					} else {
+						if (option.selected) {
+							this.selectedOption = option;
+						}
 					}
 				});
 			}
@@ -69,10 +85,12 @@ export class SideMenuContentComponent {
 	@Output() selectOption = new EventEmitter<any>();
 
 	constructor(private platform: Platform,
-		private renderer: Renderer2,
-		private domCtrl: DomController,
-		private eventsCtrl: Events,
-		private cdRef: ChangeDetectorRef) {
+				private renderer: Renderer2,
+				private domCtrl: DomController,
+				private eventsCtrl: Events,
+				private cdRef: ChangeDetectorRef) {
+
+		// Handle the redirect event
 		this.eventsCtrl.subscribe(SideMenuRedirectEvent, (data: SideMenuRedirectEventData) => {
 			this.updateSelectedOption(data);
 			this.collapseAllOptions();
