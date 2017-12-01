@@ -84,6 +84,7 @@ export class SideMenuContentComponent {
 			// Keep a reference to the options 
 			// sent to this component
 			this.menuOptions = value;
+      this.collapsableItems = new Array<InnerMenuOptionModel>();
 
 			// Map the options to our internal models
 			this.menuOptions.forEach(option => {
