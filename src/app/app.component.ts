@@ -1,6 +1,7 @@
 
 // Angular
 import { Component, ViewChild } from '@angular/core';
+import {ArrayObservable} from "rxjs/observable/ArrayObservable";
 
 // Ionic
 import { Nav, Platform, MenuController, AlertController } from 'ionic-angular';
@@ -17,6 +18,7 @@ import { DetailsPage } from '../pages/details/details';
 import { SideMenuContentComponent } from './../shared/side-menu-content/side-menu-content.component';
 import { SideMenuSettings } from './../shared/side-menu-content/models/side-menu-settings';
 import { MenuOptionModel } from './../shared/side-menu-content/models/menu-option-model';
+import {ReplaySubject} from "rxjs/ReplaySubject";
 
 @Component({
 	templateUrl: 'app.html'
@@ -44,6 +46,8 @@ export class MyApp {
 		}
 	};
 
+  private unreadCountObservable = new ReplaySubject<number>(0);
+
 	constructor(private platform: Platform,
 				private statusBar: StatusBar,
 				private splashScreen: SplashScreen,
@@ -60,6 +64,12 @@ export class MyApp {
 			// Initialize some options
 			this.initializeOptions();
 		});
+
+		//change the value for the batch every 5 seconds
+		setInterval(() => {
+      this.unreadCountObservable.next(Math.floor(Math.random()*10));
+    }, 5000);
+
 	}
 
 	private initializeOptions(): void {
@@ -88,6 +98,13 @@ export class MyApp {
 			component: DetailsPage
 		});
 
+    this.options.push({
+      iconName: 'apps',
+      displayName: 'With Badge',
+      badge: ArrayObservable.of('NEW'),
+      component: DetailsPage
+    });
+
 		// Load options with nested items (with icons)
 		// -----------------------------------------------
 		this.options.push({
@@ -99,10 +116,16 @@ export class MyApp {
 					component: DetailsPage
 				},
 				{
-					iconName: 'bookmark',
-					displayName: 'Sub Option 2',
-					component: DetailsPage
-				}
+          iconName: 'bookmark',
+          displayName: 'Sub Option 2',
+          component: DetailsPage
+        },
+        {
+          iconName: 'bookmark',
+          displayName: 'With Badge',
+          badge: this.unreadCountObservable,
+          component: DetailsPage
+        }
 			]
 		});
 
@@ -176,7 +199,7 @@ export class MyApp {
 			}
 		});
 	}
-	
+
 	public collapseMenuOptions(): void {
 		this.sideMenu.collapseAllOptions();
 	}
