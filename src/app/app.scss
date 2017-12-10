@@ -1,4 +1,47 @@
-.my-selected-option {
-    color: map-get($colors, primary);
-    font-weight: 700;
+
+side-menu-content {
+
+    $active-color: map-get($colors, primary);
+
+    // In this example, we have used the following name
+    // for the selected option in the settings object:
+    // selectedOptionClass: 'active-side-menu-option'
+
+    // Single option
+    // ------------------
+    ion-item.item.item-block.option {
+        background-color: #fff;
+        color: #222;
+
+        &.active-side-menu-option {
+            color: $active-color;
+            font-weight: 700;
+        }
+    }
+
+    // Header
+    // ------------------
+    ion-item.item.item-block.header {
+        background-color: #eee;
+        color: #222;
+
+        &.active-side-menu-option {
+            color: $active-color;
+            font-weight: 700;
+        }
+    }
+
+    // Sub option
+    // ------------------
+    ion-item.item.item-block.sub-option {
+        background-color: #fff;
+        color: #222;
+
+        &.active-side-menu-option {
+            color: $active-color;
+            font-weight: 700;            
+        }
+    }
 }
+
+

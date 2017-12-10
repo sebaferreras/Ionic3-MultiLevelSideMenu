@@ -1,4 +1,4 @@
-import { SideMenuSettings } from './../shared/side-menu-content/side-menu-content.component';
+
 // Angular
 import { Component, ViewChild } from '@angular/core';
 
@@ -13,8 +13,10 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { HomePage } from '../pages/home/home';
 import { DetailsPage } from '../pages/details/details';
 
-// Models
-import { MenuOptionModel, SideMenuContentComponent } from '../shared/side-menu-content/side-menu-content.component';
+// Side Menu Component
+import { SideMenuContentComponent } from './../shared/side-menu-content/side-menu-content.component';
+import { SideMenuSettings } from './../shared/side-menu-content/models/side-menu-settings';
+import { MenuOptionModel } from './../shared/side-menu-content/models/menu-option-model';
 
 @Component({
 	templateUrl: 'app.html'
@@ -34,7 +36,7 @@ export class MyApp {
 	public sideMenuSettings: SideMenuSettings = {
 		accordionMode: true,
 		showSelectedOption: true,
-		selectedOptionClass: 'my-selected-option',
+		selectedOptionClass: 'active-side-menu-option',
 		subOptionIndentation: {
 			md: '56px',
 			ios: '64px',
@@ -69,7 +71,7 @@ export class MyApp {
 			iconName: 'home',
 			displayName: 'Home',
 			component: HomePage,
-			
+
 			// This option is already selected
 			selected: true
 		});
@@ -161,12 +163,11 @@ export class MyApp {
 
 	public selectOption(option: MenuOptionModel): void {
 		this.menuCtrl.close().then(() => {
-
 			if (option.custom && option.custom.isLogin) {
 				this.presentAlert('You\'ve clicked the login option!');
 			} else if (option.custom && option.custom.isLogout) {
 				this.presentAlert('You\'ve clicked the logout option!');
-			} else if(option.custom && option.custom.isExternalLink) {
+			} else if (option.custom && option.custom.isExternalLink) {
 				let url = option.custom.externalUrl;
 				window.open(url, '_blank');
 			} else {
@@ -175,9 +176,8 @@ export class MyApp {
 			}
 		});
 	}
-
+	
 	public collapseMenuOptions(): void {
-		// Collapse all the options
 		this.sideMenu.collapseAllOptions();
 	}
 

@@ -23,10 +23,6 @@ ion-item.item-wp {
     padding-right: 16px;
     min-height: 50px;
 
-    &.active-side-menu-option {
-       color: map-get($colors, primary);
-    }
-
     &.item.item-block {
         border-bottom: 1px solid $item-color-bg;
     }
