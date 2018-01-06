@@ -24,12 +24,6 @@ Local packages:
 
 ```
 
-## Online demo
-
-You can take a look at the demo online in the following **Stackblitz** project:
-
-**https://multi-level-side-menu.stackblitz.io**
-
 ## Running the demo
 
 Inside of the project folder, run `npm install` and then to run the demo in the browser `ionic serve [-t android/ios]`
