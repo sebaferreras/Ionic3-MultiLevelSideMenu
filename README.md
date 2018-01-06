@@ -24,12 +24,6 @@ Local packages:
 
 ```
 
-## Online demo
-
-You can take a look at the demo online in the following **Stackblitz** project:
-
-**https://multi-level-side-menu.stackblitz.io**
-
 ## Running the demo
 
 Inside of the project folder, run `npm install` and then to run the demo in the browser `ionic serve [-t android/ios]`
@@ -52,6 +46,9 @@ export interface MenuOptionModel {
 
     // The name to display in the menu
     displayName: string;
+
+    // The badge option expects an Observable that allows the application to dynamically update the value of the badge.
+    badge?: Observable<any>;
 
     // Target component (or null if it's a "special option")
     component?: any;
@@ -328,6 +325,8 @@ public goToSubOption(): void {
 ```
 
 ## Changelog
+
+**06/01/2018**: Added support for `ion-badge` in the items/sub-items. The `badge` option expects an `Observable` that allows the application to dynamically update the value of the badge (**thanks [@ralscha](https://github.com/ralscha)!!**). Updated Ionic to the `3.9.2` version (**thanks [@peterennis](https://github.com/peterennis)!!**)<br>
 
 **04/11/2017**: Added `option`, `header` and `sub-option` classes to style the options (see `Theming` section for more details). Improved overall performance by removing direct access to the DOM.<br>
 
