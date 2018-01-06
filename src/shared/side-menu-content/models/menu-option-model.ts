@@ -1,3 +1,5 @@
+import {Observable} from "rxjs/Observable";
+
 // MenuOptionModel interface
 export interface MenuOptionModel {
 
@@ -7,6 +9,8 @@ export interface MenuOptionModel {
 
     // The name to display in the menu
     displayName: string;
+
+    badge?: Observable<any>;
 
     // Target component (or null if it's a "special option" like login/logout)
     component?: any;

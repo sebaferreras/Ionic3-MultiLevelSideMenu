@@ -14,18 +14,13 @@ The component also supports two different modes: default and accordion.
 ```
 Cli packages: (/usr/local/lib/node_modules)
 
-    @ionic/cli-utils  : 1.9.2
-    ionic (Ionic CLI) : 3.9.2
-
-Global packages:
-
-    Cordova CLI : 7.0.1
+    @ionic/cli-utils  : 1.19.0
+    ionic (Ionic CLI) : 3.19.0
 
 Local packages:
 
-    @ionic/app-scripts : 2.1.4
-    Cordova Platforms  : android 6.1.0 ios 4.4.0
-    Ionic Framework    : ionic-angular 3.6.0
+    @ionic/app-scripts : 3.1.7
+    Ionic Framework    : ionic-angular 3.9.2
 
 ```
 
