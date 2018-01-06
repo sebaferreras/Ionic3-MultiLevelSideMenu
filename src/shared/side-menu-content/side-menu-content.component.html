@@ -5,7 +5,7 @@
         <ng-template [ngIf]="!option.subItemsCount">
             <ion-item class="option" [ngClass]="menuSettings?.showSelectedOption && option.selected ? menuSettings.selectedOptionClass : null" (tap)="select(option)" tappable>
                 <ion-icon *ngIf="option.iconName" [name]="option.iconName" item-left></ion-icon>
-                {{ option.displayName }} <ion-badge *ngIf="option.badge | async as badgeNo">{{badgeNo}}</ion-badge>
+                {{ option.displayName }} <ion-badge item-right *ngIf="option.badge | async as badgeNo">{{ badgeNo }}</ion-badge>
             </ion-item>
         </ng-template>
 
@@ -25,7 +25,7 @@
                     <ng-template ngFor let-item [ngForOf]="option.subOptions">
                         <ion-item class="sub-option" [style.padding-left]="subOptionIndentation" [class.no-icon]="menuSettings?.indentSubOptionsWithoutIcons && !item.iconName" [ngClass]="menuSettings?.showSelectedOption && item.selected ? menuSettings.selectedOptionClass : null" tappable (tap)="select(item)">
                             <ion-icon *ngIf="item.iconName" [name]="item.iconName" item-left></ion-icon>
-                            {{ item.displayName }}  <ion-badge *ngIf="item.badge | async as badgeNo">{{badgeNo}}</ion-badge>
+                            {{ item.displayName }}  <ion-badge item-right *ngIf="item.badge | async as badgeNo">{{ badgeNo }}</ion-badge>
                         </ion-item>
                     </ng-template>
                 </div>
