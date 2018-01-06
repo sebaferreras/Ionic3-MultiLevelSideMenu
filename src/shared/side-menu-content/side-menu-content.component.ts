@@ -1,5 +1,6 @@
 // Angular
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core'; // tslint:disable-line
+import {Observable} from "rxjs/Observable";
 
 // Ionic
 import { Platform, Events } from 'ionic-angular';
@@ -13,6 +14,7 @@ class InnerMenuOptionModel {
 	id: number;
 	iconName: string;
 	displayName: string;
+	badge?: Observable<any>;
 
 	targetOption: MenuOptionModel;
 
@@ -32,6 +34,7 @@ class InnerMenuOptionModel {
 		innerMenuOptionModel.id = this.counter++;
 		innerMenuOptionModel.iconName = option.iconName;
 		innerMenuOptionModel.displayName = option.displayName;
+		innerMenuOptionModel.badge = option.badge;
 		innerMenuOptionModel.targetOption = option;
 		innerMenuOptionModel.parent = parent || null;
 
@@ -47,7 +50,7 @@ class InnerMenuOptionModel {
 				let innerSubItem = InnerMenuOptionModel.fromMenuOptionModel(subItem, innerMenuOptionModel);
 				innerMenuOptionModel.subOptions.push(innerSubItem);
 
-				// Select the parent if any 
+				// Select the parent if any
 				// child option is selected
 				if (subItem.selected) {
 					innerSubItem.parent.selected = true;
@@ -81,7 +84,7 @@ export class SideMenuContentComponent {
 	set options(value: Array<MenuOptionModel>) {
 		if (value) {
 
-			// Keep a reference to the options 
+			// Keep a reference to the options
 			// sent to this component
 			this.menuOptions = value;
       this.collapsableItems = new Array<InnerMenuOptionModel>();
@@ -173,7 +176,7 @@ export class SideMenuContentComponent {
 			if (option.subItemsCount) {
 				option.subOptions.forEach(subItem => {
 					if (subItem.selected) {
-						// Expand the parent if any of 
+						// Expand the parent if any of
 						// its childs is selected
 						subItem.parent.expanded = true;
 					}

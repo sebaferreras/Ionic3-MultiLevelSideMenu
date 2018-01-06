@@ -2,6 +2,10 @@
 // Angular
 import { Component, ViewChild } from '@angular/core';
 
+// RxJS
+import { ReplaySubject } from "rxjs/ReplaySubject";
+import { ArrayObservable } from "rxjs/observable/ArrayObservable";
+
 // Ionic
 import { Nav, Platform, MenuController, AlertController } from 'ionic-angular';
 
@@ -44,6 +48,8 @@ export class MyApp {
 		}
 	};
 
+	private unreadCountObservable: any = new ReplaySubject<number>(0);
+
 	constructor(private platform: Platform,
 				private statusBar: StatusBar,
 				private splashScreen: SplashScreen,
@@ -60,6 +66,12 @@ export class MyApp {
 			// Initialize some options
 			this.initializeOptions();
 		});
+
+		// Change the value for the batch every 5 seconds
+		setInterval(() => {
+			this.unreadCountObservable.next(Math.floor(Math.random() * 10));
+		}, 5000);
+
 	}
 
 	private initializeOptions(): void {
@@ -88,6 +100,13 @@ export class MyApp {
 			component: DetailsPage
 		});
 
+		this.options.push({
+			iconName: 'bowtie',
+			displayName: 'With Badge',
+			badge: ArrayObservable.of('NEW'),
+			component: DetailsPage
+		});
+
 		// Load options with nested items (with icons)
 		// -----------------------------------------------
 		this.options.push({
@@ -101,6 +120,12 @@ export class MyApp {
 				{
 					iconName: 'bookmark',
 					displayName: 'Sub Option 2',
+					component: DetailsPage
+				},
+				{
+					iconName: 'bug',
+					displayName: 'With Badge',
+					badge: this.unreadCountObservable,
 					component: DetailsPage
 				}
 			]
@@ -176,7 +201,7 @@ export class MyApp {
 			}
 		});
 	}
-	
+
 	public collapseMenuOptions(): void {
 		this.sideMenu.collapseAllOptions();
 	}
