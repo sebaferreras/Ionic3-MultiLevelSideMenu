@@ -1,15 +1,18 @@
-import {Observable} from "rxjs/Observable";
+// RxJS
+import { Observable } from "rxjs/Observable";
 
-// MenuOptionModel interface
-export interface MenuOptionModel {
+// SideMenuOption interface
+export interface SideMenuOption {
 
     // If the option has sub items and the iconName is null,
     // the default icon will be 'ios-arrow-down'.
     iconName?: string;
 
     // The name to display in the menu
-    displayName: string;
+    displayText: string;
 
+    // The badge option expects an Observable that allows 
+    // the application to dynamically update the value of the badge.
     badge?: Observable<any>;
 
     // Target component (or null if it's a "special option" like login/logout)
@@ -24,5 +27,5 @@ export interface MenuOptionModel {
     selected?: boolean;
 
     // List of sub items if any
-    subItems?: Array<MenuOptionModel>;
+    suboptions?: Array<SideMenuOption>;
 }

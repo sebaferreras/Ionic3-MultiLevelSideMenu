@@ -1,51 +1,50 @@
 // Angular
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core'; // tslint:disable-line
-import {Observable} from "rxjs/Observable";
+
+// RxJS
+import { Observable } from "rxjs/Observable";
 
 // Ionic
 import { Platform, Events } from 'ionic-angular';
 
 // Models
+import { SideMenuOption } from './models/side-menu-option';
 import { SideMenuSettings } from './models/side-menu-settings';
-import { MenuOptionModel } from './models/menu-option-model';
-import { SideMenuRedirectEvent, SideMenuRedirectEventData } from './models/side-menu-redirect-events';
+import { SideMenuOptionSelect, SideMenuOptionSelectData } from './models/side-menu-option-select-event';
 
+// This class is defined in this file because
+// we don't want to make it exportable
 class InnerMenuOptionModel {
-	id: number;
-	iconName: string;
-	displayName: string;
-	badge?: Observable<any>;
-
-	targetOption: MenuOptionModel;
-
-	parent: InnerMenuOptionModel;
-
-	selected: boolean;
-
-	expanded: boolean;
-	subItemsCount: number;
-	subOptions: Array<InnerMenuOptionModel>;
-
+	public id: number;
+	public iconName: string;
+	public displayText: string;
+	public badge?: Observable<any>;
+	public targetOption: SideMenuOption;
+	public parent: InnerMenuOptionModel;
+	public selected: boolean;
+	public expanded: boolean;
+	public suboptionsCount: number;
+	public subOptions: Array<InnerMenuOptionModel>;
 	private static counter = 1;
-	public static fromMenuOptionModel(option: MenuOptionModel, parent?: InnerMenuOptionModel): InnerMenuOptionModel {
+	public static fromMenuOptionModel(option: SideMenuOption, parent?: InnerMenuOptionModel): InnerMenuOptionModel {
 
 		let innerMenuOptionModel = new InnerMenuOptionModel();
 
 		innerMenuOptionModel.id = this.counter++;
 		innerMenuOptionModel.iconName = option.iconName;
-		innerMenuOptionModel.displayName = option.displayName;
+		innerMenuOptionModel.displayText = option.displayText;
 		innerMenuOptionModel.badge = option.badge;
 		innerMenuOptionModel.targetOption = option;
 		innerMenuOptionModel.parent = parent || null;
 
 		innerMenuOptionModel.selected = option.selected;
 
-		if (option.subItems) {
+		if (option.suboptions) {
 			innerMenuOptionModel.expanded = false;
-			innerMenuOptionModel.subItemsCount = option.subItems.length;
+			innerMenuOptionModel.suboptionsCount = option.suboptions.length;
 			innerMenuOptionModel.subOptions = [];
 
-			option.subItems.forEach(subItem => {
+			option.suboptions.forEach(subItem => {
 
 				let innerSubItem = InnerMenuOptionModel.fromMenuOptionModel(subItem, innerMenuOptionModel);
 				innerMenuOptionModel.subOptions.push(innerSubItem);
@@ -73,7 +72,7 @@ export class SideMenuContentComponent {
 
 	// Main inputs
 	public menuSettings: SideMenuSettings;
-	public menuOptions: Array<MenuOptionModel>;
+	public menuOptions: Array<SideMenuOption>;
 
 	// Private properties
 	private selectedOption: InnerMenuOptionModel;
@@ -81,13 +80,13 @@ export class SideMenuContentComponent {
 	public collapsableItems: Array<InnerMenuOptionModel> = [];
 
 	@Input('options')
-	set options(value: Array<MenuOptionModel>) {
+	set options(value: Array<SideMenuOption>) {
 		if (value) {
 
 			// Keep a reference to the options
 			// sent to this component
 			this.menuOptions = value;
-      this.collapsableItems = new Array<InnerMenuOptionModel>();
+			this.collapsableItems = new Array<InnerMenuOptionModel>();
 
 			// Map the options to our internal models
 			this.menuOptions.forEach(option => {
@@ -97,7 +96,7 @@ export class SideMenuContentComponent {
 				// Check if there's any option marked as selected
 				if (option.selected) {
 					this.selectedOption = innerMenuOption;
-				} else if (innerMenuOption.subItemsCount) {
+				} else if (innerMenuOption.suboptionsCount) {
 					innerMenuOption.subOptions.forEach(subItem => {
 						if (subItem.selected) {
 							this.selectedOption = subItem;
@@ -117,20 +116,20 @@ export class SideMenuContentComponent {
 	}
 
 	// Outputs: return the selected option to the caller
-	@Output() selectOption = new EventEmitter<any>();
+	@Output() change = new EventEmitter<any>();
 
 	constructor(private platform: Platform,
-				private eventsCtrl: Events,
-				private cdRef: ChangeDetectorRef) {
+		private eventsCtrl: Events,
+		private cdRef: ChangeDetectorRef) {
 
 		// Handle the redirect event
-		this.eventsCtrl.subscribe(SideMenuRedirectEvent, (data: SideMenuRedirectEventData) => {
+		this.eventsCtrl.subscribe(SideMenuOptionSelect, (data: SideMenuOptionSelectData) => {
 			this.updateSelectedOption(data);
 		});
 	}
 
 	ngOnDestroy() {
-		this.eventsCtrl.unsubscribe(SideMenuRedirectEvent);
+		this.eventsCtrl.unsubscribe(SideMenuOptionSelect);
 	}
 
 	// ---------------------------------------------------
@@ -144,13 +143,13 @@ export class SideMenuContentComponent {
 		}
 
 		// Return the selected option (not our inner option)
-		this.selectOption.emit(option.targetOption);
+		this.change.emit(option.targetOption);
 	}
 
 	// Toggle the sub options of the selected item
 	public toggleItemOptions(targetOption: InnerMenuOptionModel): void {
 
-		if(!targetOption) return;
+		if (!targetOption) return;
 
 		// If the accordion mode is set to true, we need
 		// to collapse all the other menu options
@@ -173,7 +172,7 @@ export class SideMenuContentComponent {
 				option.expanded = false;
 			}
 
-			if (option.subItemsCount) {
+			if (option.suboptionsCount) {
 				option.subOptions.forEach(subItem => {
 					if (subItem.selected) {
 						// Expand the parent if any of
@@ -190,17 +189,17 @@ export class SideMenuContentComponent {
 	}
 
 	// Get the proper indentation of each option
-	public get subOptionIndentation(): string {
+	public get subOptionIndentation(): number {
 		if (this.platform.is('ios')) return this.menuSettings.subOptionIndentation.ios;
 		if (this.platform.is('windows')) return this.menuSettings.subOptionIndentation.wp;
 		return this.menuSettings.subOptionIndentation.md;
 	}
 
 	// Get the proper height of each option
-	public get itemHeight(): number {
-		if (this.platform.is('ios')) return this.menuSettings.itemHeight.ios;
-		if (this.platform.is('windows')) return this.menuSettings.itemHeight.wp;
-		return this.menuSettings.itemHeight.md;
+	public get optionHeight(): number {
+		if (this.platform.is('ios')) return this.menuSettings.optionHeight.ios;
+		if (this.platform.is('windows')) return this.menuSettings.optionHeight.wp;
+		return this.menuSettings.optionHeight.md;
 	}
 
 	// ---------------------------------------------------
@@ -242,20 +241,17 @@ export class SideMenuContentComponent {
 	}
 
 	// Update the selected option
-	private updateSelectedOption(data: SideMenuRedirectEventData): void {
-
-		if (!data.displayName) {
-			return;
-		}
+	private updateSelectedOption(data: SideMenuOptionSelectData): void {
+		if (!data.displayText) return;
 
 		let targetOption;
 
 		this.collapsableItems.forEach(option => {
-			if (option.displayName.toLowerCase() === data.displayName.toLowerCase()) {
+			if (option.displayText.toLowerCase() === data.displayText.toLowerCase()) {
 				targetOption = option;
-			} else if (option.subItemsCount) {
+			} else if (option.suboptionsCount) {
 				option.subOptions.forEach(subOption => {
-					if (subOption.displayName.toLowerCase() === data.displayName.toLowerCase()) {
+					if (subOption.displayText.toLowerCase() === data.displayText.toLowerCase()) {
 						targetOption = subOption;
 					}
 				});
@@ -271,7 +267,7 @@ export class SideMenuContentComponent {
 	private mergeSettings(): void {
 		const defaultSettings: SideMenuSettings = {
 			accordionMode: false,
-			itemHeight: {
+			optionHeight: {
 				ios: 50,
 				md: 50,
 				wp: 50
@@ -281,9 +277,9 @@ export class SideMenuContentComponent {
 			selectedOptionClass: 'selected-option',
 			indentSubOptionsWithoutIcons: false,
 			subOptionIndentation: {
-				ios: '16px',
-				md: '16px',
-				wp: '16px'
+				ios: 16,
+				md: 16,
+				wp: 16
 			}
 		}
 
@@ -293,29 +289,26 @@ export class SideMenuContentComponent {
 			return;
 		}
 
-		if (!this.menuSettings.itemHeight) {
-			this.menuSettings.itemHeight = defaultSettings.itemHeight;
+		if (!this.menuSettings.optionHeight) {
+			this.menuSettings.optionHeight = defaultSettings.optionHeight;
 		} else {
-			this.menuSettings.itemHeight.ios = this.isDefinedAndPositive(this.menuSettings.itemHeight.ios) ? this.menuSettings.itemHeight.ios : defaultSettings.itemHeight.ios;
-			this.menuSettings.itemHeight.md = this.isDefinedAndPositive(this.menuSettings.itemHeight.md) ? this.menuSettings.itemHeight.md : defaultSettings.itemHeight.md;
-			this.menuSettings.itemHeight.wp = this.isDefinedAndPositive(this.menuSettings.itemHeight.wp) ? this.menuSettings.itemHeight.wp : defaultSettings.itemHeight.wp;
+			this.menuSettings.optionHeight.ios = this.isDefinedAndPositive(this.menuSettings.optionHeight.ios) ? this.menuSettings.optionHeight.ios : defaultSettings.optionHeight.ios;
+			this.menuSettings.optionHeight.md = this.isDefinedAndPositive(this.menuSettings.optionHeight.md) ? this.menuSettings.optionHeight.md : defaultSettings.optionHeight.md;
+			this.menuSettings.optionHeight.wp = this.isDefinedAndPositive(this.menuSettings.optionHeight.wp) ? this.menuSettings.optionHeight.wp : defaultSettings.optionHeight.wp;
 		}
 
 		this.menuSettings.showSelectedOption = this.isDefined(this.menuSettings.showSelectedOption) ? this.menuSettings.showSelectedOption : defaultSettings.showSelectedOption;
 		this.menuSettings.accordionMode = this.isDefined(this.menuSettings.accordionMode) ? this.menuSettings.accordionMode : defaultSettings.accordionMode;
 		this.menuSettings.arrowIcon = this.isDefined(this.menuSettings.arrowIcon) ? this.menuSettings.arrowIcon : defaultSettings.arrowIcon;
 		this.menuSettings.selectedOptionClass = this.isDefined(this.menuSettings.selectedOptionClass) ? this.menuSettings.selectedOptionClass : defaultSettings.selectedOptionClass;
-		this.menuSettings.subOptionIndentation = this.isDefined(this.menuSettings.subOptionIndentation) ? this.menuSettings.subOptionIndentation : defaultSettings.subOptionIndentation;
-
 		this.menuSettings.indentSubOptionsWithoutIcons = this.isDefined(this.menuSettings.indentSubOptionsWithoutIcons) ? this.menuSettings.indentSubOptionsWithoutIcons : defaultSettings.indentSubOptionsWithoutIcons;
-
 
 		if (!this.menuSettings.subOptionIndentation) {
 			this.menuSettings.subOptionIndentation = defaultSettings.subOptionIndentation;
 		} else {
-			this.menuSettings.subOptionIndentation.ios = this.isDefined(this.menuSettings.subOptionIndentation.ios) ? this.menuSettings.subOptionIndentation.ios : defaultSettings.subOptionIndentation.ios;
-			this.menuSettings.subOptionIndentation.md = this.isDefined(this.menuSettings.subOptionIndentation.md) ? this.menuSettings.subOptionIndentation.md : defaultSettings.subOptionIndentation.md;
-			this.menuSettings.subOptionIndentation.wp = this.isDefined(this.menuSettings.subOptionIndentation.wp) ? this.menuSettings.subOptionIndentation.wp : defaultSettings.subOptionIndentation.wp;
+			this.menuSettings.subOptionIndentation.ios = this.isDefinedAndPositive(this.menuSettings.subOptionIndentation.ios) ? this.menuSettings.subOptionIndentation.ios : defaultSettings.subOptionIndentation.ios;
+			this.menuSettings.subOptionIndentation.md = this.isDefinedAndPositive(this.menuSettings.subOptionIndentation.md) ? this.menuSettings.subOptionIndentation.md : defaultSettings.subOptionIndentation.md;
+			this.menuSettings.subOptionIndentation.wp = this.isDefinedAndPositive(this.menuSettings.subOptionIndentation.wp) ? this.menuSettings.subOptionIndentation.wp : defaultSettings.subOptionIndentation.wp;
 		}
 	}
 
