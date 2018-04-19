@@ -1,0 +1,22 @@
+page-emails {
+    .list-ios .item-block .item-inner,
+    .list-md .item-block .item-inner {
+        border-bottom: none;
+    }
+
+    .list-md + ion-list ion-list-header {
+        border-top: none;
+    }
+
+    span.circle {
+        background-color: map-get($colors, primary);
+        border-radius: 50%;
+        display: block;
+        height: 36px;
+        width: 36px;
+    }
+    
+    .bin span.circle {
+        background-color: map-get($colors, danger);
+    }
+}

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.app.multi-level-side-menu" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Multilevel Side Menu</name>
-    <description>Multilevel Side Menu created with Ionic.</description>
+    <description>Ionic 2/3 demo of a two-level side menu.</description>
     <author email="sebastian@flioh.com" href="http://www.flioh.com">Sebastian Ferreras</author>
     <content src="index.html" />
     <access origin="*" />

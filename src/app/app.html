@@ -7,8 +7,8 @@
 
 	<ion-content>
 
-		<!-- Side Menu -->
-		<side-menu-content [settings]="sideMenuSettings" [options]="options" (selectOption)="selectOption($event)"></side-menu-content>
+		<!-- side menu content -->
+		<side-menu-content [settings]="sideMenuSettings" [options]="options" (change)="onOptionSelected($event)"></side-menu-content>
 
 	</ion-content>
 </ion-menu>

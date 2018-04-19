@@ -3,7 +3,7 @@ export interface SideMenuSettings {
     accordionMode?: boolean;
     arrowIcon?: string;
 
-    itemHeight?: {
+    optionHeight?: {
         ios?: number,
         md?: number,
         wp?: number
@@ -15,8 +15,8 @@ export interface SideMenuSettings {
     indentSubOptionsWithoutIcons?: boolean;
 
     subOptionIndentation?: {
-        ios?: string,
-        md?: string,
-        wp?: string
+        ios?: number,
+        md?: number,
+        wp?: number
     };
 }

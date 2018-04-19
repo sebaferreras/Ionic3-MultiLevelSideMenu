@@ -1,0 +1,84 @@
+<ion-header>
+  <ion-navbar [color]="showDeleted ? 'danger' : 'primary'">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>{{ showDeleted ? 'Bin' : 'Inbox' }}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list [class.bin]="showDeleted">
+    <ion-item>
+      <ion-avatar item-start>
+        <span class="circle"></span>
+      </ion-avatar>
+      <h2>Finn</h2>
+      <h3>I'm a big deal</h3>
+      <p>Listen, I've had a pretty messed up day...</p>
+    </ion-item>
+
+    <ion-item>
+      <ion-avatar item-start>
+        <span class="circle"></span>
+      </ion-avatar>
+      <h2>Han</h2>
+      <h3>Look, kid...</h3>
+      <p>I've got enough on my plate as it is, and I...</p>
+    </ion-item>
+
+    <ion-item>
+      <ion-avatar item-start>
+        <span class="circle"></span>
+      </ion-avatar>
+      <h2>Rey</h2>
+      <h3>I can handle myself</h3>
+      <p>You will remove these restraints and leave...</p>
+    </ion-item>
+
+    <ion-item>
+      <ion-avatar item-start>
+        <span class="circle"></span>
+      </ion-avatar>
+      <h2>Luke</h2>
+      <h3>Your thoughts betray you</h3>
+      <p>I feel the good in you, the conflict...</p>
+    </ion-item>
+
+    <ion-item>
+      <ion-avatar item-start>
+        <span class="circle"></span>
+      </ion-avatar>
+      <h2>Poe</h2>
+      <h3>New Ride</h3>
+      <p>I just upgraded my X-Wing. Next time...</p>
+    </ion-item>
+
+    <ion-item>
+      <ion-avatar item-start>
+        <span class="circle"></span>
+      </ion-avatar>
+      <h2>Ben</h2>
+      <h3>Move Along</h3>
+      <p>These aren't the droids you're looking for...</p>
+    </ion-item>
+
+    <ion-item>
+      <ion-avatar item-start>
+        <span class="circle"></span>
+      </ion-avatar>
+      <h2>Leia</h2>
+      <h3>You're My Only Hope</h3>
+      <p>I've placed information vital to the survival...</p>
+    </ion-item>
+
+    <ion-item>
+      <ion-avatar item-start>
+        <span class="circle"></span>
+      </ion-avatar>
+      <h2>Yoda</h2>
+      <h3>Size matters not</h3>
+      <p>Do or do not. There is no try...</p>
+    </ion-item>
+  </ion-list>
+</ion-content>
