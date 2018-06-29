@@ -9,7 +9,28 @@ The component also supports two different modes: **accordion** and **default**.
   <img src="resources/gifs/default.gif" alt="Default" width="350">
 </p>
 
-## Ionic info
+
+# Table of contents
+
+* [Ionic info](#ionic-info)
+* [Running the demo](#running-the-demo)
+* [Using the component in your projects](#using-the-component-in-your-projects)
+* [Features](#features)
+    * [Items structure](#items-structure)
+    * [Selecting options](#selecting-options)
+    * [Settings](#settings)
+    * [Some other public methods](#some-other-public-methods)
+    * [Theming](#theming)
+    * [Navigation outside the side menu](#navigation-outside-the-side-menu)
+        * [SideMenuDisplayText](#sidemenudisplaytext)
+        * [SideMenuDisplayTextConditions](#sidemenudisplaytextconditions)
+        * [SideMenuOptionSelect with SideMenuOptionSelectData](#sidemenuoptionselect-with-sidemenuoptionselectdata)
+* [Changelog](#changelog)
+* [Roadmap](#roadmap)
+* [Contribution](#contribution)
+* [Support this project](#support-this-project)
+
+# Ionic info
 
 ```
 Cli packages: (/usr/local/lib/node_modules)
@@ -24,13 +45,15 @@ Local packages:
 
 ```
 
-## Running the demo
+# Running the demo
 
 Inside of the project folder, run `npm install` and then to run the demo in the browser `ionic serve [-t android/ios]`
 
 ## Using the component in your projects
 
 Just copy the `side-menu-content` folder (inculding the html, ts and scss files) in your project. Then include the `SideMenuContentComponent` in the `declarations` array from your `@NgModule`.
+
+# Features
 
 ## Items structure
 
@@ -50,13 +73,13 @@ export interface SideMenuOption {
 
 Property | Type | Description
 --- | --- | ---
-`iconName` | `string` | **Optional**. Name of the *Ionic icon* to be used for this option/suboption. If it is an option with suboptions and the `iconName` is null, the default icon will be `ios-arrow-down`.
-`displayText` | `string` | Text to be shown in the menu.
-`badge` | `Observable<any>` | **Optional**. `Observable` that allows the application to dynamically update the value of the badge.
+`iconName` | `string` | **Optional**. Name of the *Ionic icon* to be used for this option/suboption. If it is an option with suboptions and the `iconName` is null, the default icon will be `ios-arrow-down`
+`displayText` | `string` | Text to be shown in the menu
+`badge` | `Observable<any>` | **Optional**. `Observable` that allows the application to dynamically update the value of the badge
 `component` | `any` | **Optional**. Target component or `null` if it is a *special option/suboption* (this would mean that it does not change the current page, so it may be related to login/logout options, or to changing the current language, ...)
 `custom` | `any` | **Optional**. Property to pass whatever we need. That way we can access this property when the user selects this option/suboption and handle login/logout options, changing the language, ...
-`selected` | `boolean` | **Optional**. If `true`, the option/suboption will be marked as selected by default.
-`suboptions` | `Array<SideMenuOption>` | **Optional**. List of suboptions of the option. Each suboption should be of type `SideMenuOption`.
+`selected` | `boolean` | **Optional**. If `true`, the option/suboption will be marked as selected by default
+`suboptions` | `Array<SideMenuOption>` | **Optional**. List of suboptions of the option. Each suboption should be of type `SideMenuOption`
 
 So an option with nested suboptions would look like this:
 
@@ -479,41 +502,31 @@ export class DemoPage {
 }
 ```
 
-## Changelog
+# Changelog
 
-**19/04/2018** Added `SideMenuDisplayText` and `SideMenuDisplayTextConditions` custom decorators. That way the right option can be selected when refresing the page (see [this issue](https://github.com/sebaferreras/Ionic3-MultiLevelSideMenu/issues/21)). Created **lazy-loaded pages** for every option of the demo.
+ * **19/04/2018** Added `SideMenuDisplayText` and `SideMenuDisplayTextConditions` custom decorators. That way the right option can be selected when refresing the page (see [this issue](https://github.com/sebaferreras/Ionic3-MultiLevelSideMenu/issues/21)). Created **lazy-loaded pages** for every option of the demo.
 
-### **🔥 ⚠️️️ Breaking changes ⚠️️️ 🔥**
+    ### **🔥 ⚠️️️ Breaking changes ⚠️️️ 🔥**
 
-**Some interfaces and properties were renamed from the previous version**. So if you're updating this demo project from the previous version, please take a look at the **[breaking changes](https://github.com/sebaferreras/Ionic3-MultiLevelSideMenu/blob/master/BREAKING_CHANGES.md)** section.
+    **Some interfaces and properties were renamed from the previous version**. So if you're updating this demo project from the previous version, please take a look at the **[breaking changes](https://github.com/sebaferreras/Ionic3-MultiLevelSideMenu/blob/master/BREAKING_CHANGES.md)** section.
 
----
+* **06/01/2018**: Added support for `ion-badge` in the items/sub-items. The `badge` option expects an `Observable` that allows the application to dynamically update the value of the badge (**thanks [@ralscha](https://github.com/ralscha)!!**). Updated Ionic to the `3.9.2` version (**thanks [@peterennis](https://github.com/peterennis)!!**)<br>
 
-**06/01/2018**: Added support for `ion-badge` in the items/sub-items. The `badge` option expects an `Observable` that allows the application to dynamically update the value of the badge (**thanks [@ralscha](https://github.com/ralscha)!!**). Updated Ionic to the `3.9.2` version (**thanks [@peterennis](https://github.com/peterennis)!!**)<br>
+* **04/11/2017**: Added `option`, `header` and `sub-option` classes to style the options (see `Theming` section for more details). Improved overall performance by removing direct access to the DOM.<br>
 
----
+* **30/08/2017**: Added `showSelectedOption` and `selectedOptionClass` to highlight the currently selected option. Added `custom` subproperty in the `SideMenuOption` model to allow the user to add any custom property on the items.<br>
 
-**04/11/2017**: Added `option`, `header` and `sub-option` classes to style the options (see `Theming` section for more details). Improved overall performance by removing direct access to the DOM.<br>
+* **16/09/2017**: Added `indentSubOptionsWithoutIcons` and `subOptionIndentation` settings to allow the user to customize the indentation of the sub items. Improved inner logic so now if the `showSelectedOption` setting is `true` and the currently selected option is a sub item, its parent will be shown expanded when opening the side menu.<br>
 
----
-
-**30/08/2017**: Added `showSelectedOption` and `selectedOptionClass` to highlight the currently selected option. Added `custom` subproperty in the `SideMenuOption` model to allow the user to add any custom property on the items.<br>
-
----
-
-**16/09/2017**: Added `indentSubOptionsWithoutIcons` and `subOptionIndentation` settings to allow the user to customize the indentation of the sub items. Improved inner logic so now if the `showSelectedOption` setting is `true` and the currently selected option is a sub item, its parent will be shown expanded when opening the side menu.<br>
-
----
-
-## Roadmap
+# Roadmap
 
 - Convert this demo into an *npm package*
 - Add unit testing
 - Add e2e testing
 
-## Contribution
+# Contribution
 - Having an **issue** or looking for **support**? [Open an issue](https://github.com/sebaferreras/Ionic3-MultiLevelSideMenu/issues/new) and I'll do my best to help you out.
 - Got a **new feature or a bug fix**? Fork the repo, make your changes, and submit a pull request.
 
-## Support this project
+# Support this project
 If you find this project useful, please star the repo to let people know that it's reliable. Also, share it with friends and colleagues that might find this useful as well. Thank you! :)
