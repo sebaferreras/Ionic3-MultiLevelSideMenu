@@ -21,6 +21,6 @@ export class HomePage {
 	}
 
 	public goToSubOption(): void {
-		this.navCtrl.setRoot('SubOptionTwoPage');
+		this.navCtrl.setRoot('WithIconsSubOptionTwoPage');
 	}
 }

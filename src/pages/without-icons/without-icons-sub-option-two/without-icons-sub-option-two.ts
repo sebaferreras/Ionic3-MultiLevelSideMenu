@@ -9,8 +9,8 @@ import { SideMenuDisplayText } from '../../../shared/side-menu-content/custom-de
 
 @IonicPage()
 @Component({
-    selector: 'page-sub-option-four',
-    templateUrl: 'sub-option-four.html'
+    selector: 'without-icons-page-sub-option-two',
+    templateUrl: 'without-icons-sub-option-two.html'
 })
-@SideMenuDisplayText('Sub Option 4')
-export class SubOptionFourPage { }
+@SideMenuDisplayText('Without icons >> Sub Option 2')
+export class WithoutIconsSubOptionTwoPage { }

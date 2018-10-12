@@ -329,7 +329,7 @@ This custom decorator allows each page to define which option from the side menu
 
 `@SideMenuDisplayText(displayText: string)`.
 
-The `displayText` parameter is **mandatory** and should be equal to the `displayText` property from the option that should be marked as selected when the user enters to this page. 
+The `displayText` parameter is **mandatory** and should be equal to the `displayText` property from the option that should be marked as selected when the user enters to this page. If there are multiple suboptions with the same `displayText`, `"optionDisplayText >> suboptionDisplayText"` should be used instead (for example, `"With Icons >> Sub Option 1"`).
 
 So if in the `app.component.ts` file we created the option like this:
 
@@ -440,7 +440,7 @@ Param | Description
 `propertyName` | Name of a property from the page/component to check its value against the `value` property
 `value` | **Optional**. Value that the property with name `propertyName` should have mark this option as selected
 `matcher` | Defines how should the value from `propertyName` be checked to figure out if the condition is satisfied
-`displayText` | The `displayText` of the option/suboption from the side menu that should be marked as selected if the condition is satisfied
+`displayText` | The `displayText` of the option/suboption from the side menu that should be marked as selected if the condition is satisfied. If there are multiple suboptions with the same `displayText`, `"optionDisplayText >> suboptionDisplayText"` should be used instead (for example, `"With Icons >> Sub Option 1"`).
 
 The `Matcher` *enum* includes the following values:
 
@@ -503,6 +503,8 @@ export class DemoPage {
 ```
 
 # Changelog
+
+ * **12/10/2018** Added support for multiple suboptions with the same name. In order to show the proper option as selected the *displayText* should be `"optionDisplayText >> suboptionDisplayText"` (in this demo for example, you can see that the suboption *Sub Option 1* from the *With Icons* option uses `"With icons >> Sub Option 1"` in the custom decorator).
 
  * **19/04/2018** Added `SideMenuDisplayText` and `SideMenuDisplayTextConditions` custom decorators. That way the right option can be selected when refresing the page (see [this issue](https://github.com/sebaferreras/Ionic3-MultiLevelSideMenu/issues/21)). Created **lazy-loaded pages** for every option of the demo.
 

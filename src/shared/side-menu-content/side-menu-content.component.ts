@@ -244,19 +244,50 @@ export class SideMenuContentComponent {
 	private updateSelectedOption(data: SideMenuOptionSelectData): void {
 		if (!data.displayText) return;
 
-		let targetOption;
+		let targetOption: InnerMenuOptionModel;
 
-		this.collapsableItems.forEach(option => {
-			if (option.displayText.toLowerCase() === data.displayText.toLowerCase()) {
-				targetOption = option;
-			} else if (option.suboptionsCount) {
-				option.subOptions.forEach(subOption => {
-					if (subOption.displayText.toLowerCase() === data.displayText.toLowerCase()) {
+		if (data.displayText.includes('>>')) {
+
+			// The display text includes the name of the parent
+			const parentDisplayText = data.displayText.split('>>')[0];
+			const childDisplayText = data.displayText.split('>>')[1];
+
+			let targetParent: InnerMenuOptionModel;
+
+			// First search the parent option
+			this.collapsableItems.forEach(option => {
+				if (this.compareOptionsName(option.displayText, parentDisplayText)) {
+					targetParent = option;
+				}
+			});
+
+			// Now try to find the child option within the parent
+			if (targetParent) {
+				targetParent.subOptions.forEach(subOption => {
+					if (this.compareOptionsName(subOption.displayText, childDisplayText)) {
 						targetOption = subOption;
 					}
 				});
 			}
-		});
+
+		} else {
+
+			// The display text does not include the name of the parent
+			this.collapsableItems.forEach(option => {
+				if (this.compareOptionsName(option.displayText, data.displayText)) {
+					targetOption = option;
+				} else if (option.suboptionsCount) {
+					option.subOptions.forEach(subOption => {
+						if (this.compareOptionsName(subOption.displayText, data.displayText)) {
+							targetOption = subOption;
+						}
+					});
+				}
+			});
+
+		}
+
+
 
 		if (targetOption) {
 			this.setSelectedOption(targetOption);
@@ -318,5 +349,9 @@ export class SideMenuContentComponent {
 
 	private isDefinedAndPositive(property: any): boolean {
 		return this.isDefined(property) && !isNaN(property) && property > 0;
+	}
+
+	private compareOptionsName(name1: string, name2: string): boolean {
+		return name1.replace(/\s/g, '').toLowerCase() === name2.replace(/\s/g, '').toLowerCase();
 	}
 }

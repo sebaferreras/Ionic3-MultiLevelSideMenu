@@ -98,17 +98,17 @@ export class MyApp {
 		// Load options with nested items (with icons)
 		// -----------------------------------------------
 		this.options.push({
-			displayText: 'Sub options with icons',
+			displayText: 'With icons',
 			suboptions: [
 				{
 					iconName: 'basket',
 					displayText: 'Sub Option 1',
-					component: 'SubOptionOnePage'
+					component: 'WithIconsSubOptionOnePage'
 				},
 				{
 					iconName: 'bookmark',
 					displayText: 'Sub Option 2',
-					component: 'SubOptionTwoPage'
+					component: 'WithIconsSubOptionTwoPage'
 				},
 				{
 					iconName: 'bug',
@@ -122,20 +122,16 @@ export class MyApp {
 		// Load options with nested items (without icons)
 		// -----------------------------------------------
 		this.options.push({
-			displayText: 'Sub options without icons',
+			displayText: 'Without icons',
 			suboptions: [
 				{
-					displayText: 'Sub Option 3',
-					component: 'SubOptionThreePage'
+					displayText: 'Sub Option 1',
+					component: 'WithoutIconsSubOptionOnePage'
 				},
 				{
-					displayText: 'Sub Option 4',
-					component: 'SubOptionFourPage'
+					displayText: 'Sub Option 2',
+					component: 'WithoutIconsSubOptionTwoPage'
 				},
-				{
-					displayText: 'Sub Option 5',
-					component: 'SubOptionFivePage'
-				}
 			]
 		});
 
